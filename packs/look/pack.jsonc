@@ -34,6 +34,7 @@
         "tab_bar.background": "${glass_panel_dark}${glass_alpha}",
         "tab.inactive_background": "${glass_panel_dark}${glass_alpha}",
         "title_bar.background": "${glass_panel_dark}${glass_alpha}",
+        "title_bar.inactive_background": "${glass_panel_dark}${glass_alpha}",
         "status_bar.background": "${glass_panel_dark}${glass_alpha}",
         "toolbar.background": "${glass_bg_dark}${glass_alpha}",
         "terminal.background": "${glass_bg_dark}${glass_alpha}"
@@ -47,6 +48,7 @@
         "tab_bar.background": "${glass_panel_light}${glass_alpha}",
         "tab.inactive_background": "${glass_panel_light}${glass_alpha}",
         "title_bar.background": "${glass_panel_light}${glass_alpha}",
+        "title_bar.inactive_background": "${glass_panel_light}${glass_alpha}",
         "status_bar.background": "${glass_panel_light}${glass_alpha}",
         "toolbar.background": "${glass_bg_light}${glass_alpha}",
         "terminal.background": "${glass_bg_light}${glass_alpha}"

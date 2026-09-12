@@ -157,6 +157,10 @@
     "use_smartcase_find": true,
     "highlight_on_yank_duration": 200
   },
+  // The default "small" leaves no room for the picker preview (alt-p).
+  "file_finder": {
+    "modal_max_width": "medium"
+  },
   "which_key": {
     "enabled": true,
     "delay_ms": 400

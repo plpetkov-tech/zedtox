@@ -14,7 +14,8 @@
     "github-actions",
     "jenkins",
     "docker",
-    "look"
+    "look",
+    "motion"
   ],
 
   "vars": {

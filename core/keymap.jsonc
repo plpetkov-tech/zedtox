@@ -34,6 +34,9 @@
       "space s s": "outline::Toggle",
       "space s shift-s": "project_symbols::Toggle",
       "space s g": "pane::DeploySearch",
+      "space s r": "buffer_search::DeployReplace",
+      "space s shift-r": ["pane::DeploySearch", { "replace_enabled": true }],
+      "space s /": ["workspace::SendKeystrokes", "ctrl-f ctrl-l"],
 
       // code (LSP)
       "space c a": "editor::ToggleCodeActions",
@@ -70,6 +73,17 @@
       "space w z": "workspace::ToggleZoom",
       "space b d": "pane::CloseActiveItem",
       "space o t": "terminal_panel::ToggleFocus"
+    }
+  },
+  // ---------------------------------------------------------------- pickers
+  // Works while typing in any picker (files, symbols, branches, tasks...).
+  // tab and alt-enter are taken by Zed (ConfirmCompletion / ConfirmInput).
+  {
+    "context": "Picker > Editor",
+    "bindings": {
+      "alt-p": "picker::TogglePreview", // fzf-style preview of the highlighted entry
+      "alt-v": "picker::SetPreviewRight", // preview beside the list
+      "alt-m": "picker::ToggleMultiSelect" // mark several entries, open them at once
     }
   },
   {

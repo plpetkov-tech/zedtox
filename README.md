@@ -52,6 +52,28 @@ Both toggles work in vim mode and in vanilla mode. Command palette equivalents: 
 | `space e` · `ctrl-n` | File tree |
 | `space f r` · `space f n` | Recent projects · new file |
 
+**Search and replace**
+
+| Key | Does |
+|---|---|
+| `/` · `space /` | Search this file · search the project (both seed from the word under the cursor) |
+| `space s r` · `space s R` | Replace in this file · replace across the project |
+| `space s /` | Search within the selection only |
+| `space s g` · `space s s` · `space s S` | Grep project · symbols in file · symbols in project |
+| in project search: `alt-r` · `alt-ctrl-f` | Regex · include/exclude file globs |
+
+Project-search results are an **editable multibuffer**: change the results in place, `g a` selects
+every match at once, `:w` saves every touched file. That's the cross-file refactor when LSP rename
+(`space c r`) doesn't apply. `:%s/a/b/g` works too, and Zed rewrites vim-style regex groups for you.
+
+**Pickers** (while a modal is open)
+
+| Key | Does |
+|---|---|
+| `alt-p` · `alt-v` | Toggle preview · put the preview beside the list |
+| `alt-m` | Mark several entries, open them together |
+| `ctrl-shift-i` | Include gitignored files (file finder) |
+
 **Code and LSP**
 
 | Key | Does |
@@ -97,6 +119,8 @@ Zed's built-in vim keys still apply:
 - `K` / `gh`: hover
 - `]d`, `[d`: next/previous diagnostic; `]c`, `[c`: next/previous git hunk
 - `gc`: comment; `gs`, `gS`: symbols
+- `s` / `S`: Sneak — jump to the next / previous occurrence of two characters (the `motion` pack;
+  vim's `s` and `S` live on as `c l` and `c c`)
 
 With Copilot on: `tab` or `alt-l` accepts, `alt-k` / `alt-j` accept the next word / line, `alt-]` / `alt-[` cycle, `alt-\` asks for a suggestion. Completion docs appear beside the menu (Zed places them; not configurable).
 
@@ -168,7 +192,7 @@ Deliberately skipped: Docker Inc.'s docker-language-server (compose files stay Y
 
 ## Packs
 
-`python3 zedcfg.py list` shows them. On by default: `json yaml kubernetes helm python bash github-actions jenkins docker`. Available: `terraform markdown`.
+`python3 zedcfg.py list` shows them. On by default: `json yaml kubernetes helm python bash github-actions jenkins docker look motion`. Available: `terraform markdown`.
 
 **Add one — about 5 minutes.**
 

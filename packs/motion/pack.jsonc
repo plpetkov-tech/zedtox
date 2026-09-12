@@ -1,0 +1,18 @@
+{
+  "description": "Motion: Sneak - s + two characters jumps anywhere on screen (leap/flash equivalent). Disable with \"disable\": [\"motion\"] in local.jsonc",
+
+  "requires": [],
+
+  "keymap": [
+    {
+      // s <two chars> jumps forward, S jumps backward; ; and , repeat like f/t.
+      // This takes over vim's s (substitute char) and S (substitute line).
+      // Their equivalents are still there: `c l` for s, `c c` for S.
+      "context": "vim_mode == normal || vim_mode == visual",
+      "bindings": {
+        "s": "vim::Sneak",
+        "shift-s": "vim::SneakBackward"
+      }
+    }
+  ]
+}

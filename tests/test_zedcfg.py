@@ -161,6 +161,28 @@ class RepoBuildTest(unittest.TestCase):
         for block in self.b.keymap:
             if any(k.startswith("space ") for k in block["bindings"]):
                 self.assertIn("vim_mode", block.get("context", ""), block)
+        # ... and modal bindings must NOT sit in a vim context, or they'd be dead in pickers
+        for block in self.b.keymap:
+            if "Picker" in block.get("context", ""):
+                self.assertNotIn("vim_mode", block["context"], block)
+
+    def test_no_binding_is_shadowed_within_a_context(self):
+        # Two blocks with the same context binding the same key: the later one wins
+        # silently. Packs append after core, so this is how a pack would eat a core key.
+        seen = {}
+        for block in self.b.keymap:
+            context = block.get("context", "")
+            for keys, action in block["bindings"].items():
+                previous = seen.get((context, keys))
+                self.assertIsNone(previous, f"{context!r} binds {keys!r} twice: {previous} then {action}")
+                seen[(context, keys)] = action
+
+    def test_picker_bindings_use_the_picker_context(self):
+        picker = [b for b in self.b.keymap if "Picker" in b.get("context", "")]
+        self.assertTrue(picker, "expected a picker block")
+        for block in picker:
+            for action in block["bindings"].values():
+                self.assertTrue(str(action).startswith("picker::"), action)
 
     def test_toggles_reachable_in_both_modes(self):
         workspace = {k: v for blk in self.b.keymap if blk.get("context") == "Workspace" for k, v in blk["bindings"].items()}
