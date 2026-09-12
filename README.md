@@ -70,9 +70,12 @@ every match at once, `:w` saves every touched file. That's the cross-file refact
 
 | Key | Does |
 |---|---|
-| `alt-p` · `alt-v` | Toggle preview · put the preview beside the list |
-| `alt-m` | Mark several entries, open them together |
+| `ctrl-/` | Toggle the preview pane |
+| `ctrl-space` | Mark several entries, open them together |
 | `ctrl-shift-i` | Include gitignored files (file finder) |
+
+The leader isn't available inside a modal (space types a space), and alt belongs to your window
+manager on a tiling WM, so these are ctrl chords.
 
 **Code and LSP**
 

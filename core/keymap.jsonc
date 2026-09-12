@@ -77,13 +77,14 @@
   },
   // ---------------------------------------------------------------- pickers
   // Works while typing in any picker (files, symbols, branches, tasks...).
+  // The leader can't be used here: space types a space into the query.
+  // No alt either - a tiling WM usually owns alt (sway's $mod). ctrl is free.
   // tab and alt-enter are taken by Zed (ConfirmCompletion / ConfirmInput).
   {
     "context": "Picker > Editor",
     "bindings": {
-      "alt-p": "picker::TogglePreview", // fzf-style preview of the highlighted entry
-      "alt-v": "picker::SetPreviewRight", // preview beside the list
-      "alt-m": "picker::ToggleMultiSelect" // mark several entries, open them at once
+      "ctrl-/": "picker::TogglePreview", // fzf's preview key
+      "ctrl-space": "picker::ToggleMultiSelect" // mark entries, open them together
     }
   },
   {
