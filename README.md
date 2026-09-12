@@ -204,6 +204,20 @@ Zed runs natively on Windows and opens your repos *inside* WSL. Language servers
 - **Old Zed downloads.** `doctor` lists language servers Zed fetched itself before you installed the system ones, and `doctor --clean-downloads` deletes exactly those that a PATH install now supersedes.
 - **Uninstall.** Restore that first backup and delete `zed-initiative.state.json`.
 
+## Publishing this repo
+
+It's meant to be shareable, and nothing here is secret: no credentials, no cluster data, no
+infrastructure names. Two habits keep it that way:
+
+- **Employer-specific values go in `local.jsonc`** (gitignored), not `config.jsonc`. That's the
+  place for your real folder layout (`k8s_extra_globs`), internal schema URLs and the like.
+- **Cluster CRD dumps stay out of the repo.** `crd_extract.py` writes to
+  `~/.local/share/zed-initiative/crds` by default; `.gitignore` also covers `crds/`, kubeconfigs,
+  tfvars and key material in case a path gets redirected.
+
+Note that commit metadata publishes the name and email in your git config. Set a GitHub
+noreply address first if you'd rather not have your real one indexed.
+
 ## Tests
 
 ```sh

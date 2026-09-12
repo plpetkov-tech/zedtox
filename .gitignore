@@ -2,3 +2,17 @@
 /local.jsonc
 __pycache__/
 *.pyc
+
+# Never commit anything describing a real cluster or environment.
+# crd_extract.py writes outside the repo by default; this covers a redirected --out.
+crds/
+schemas/
+*.kubeconfig
+kubeconfig*
+.env
+.env.*
+*.tfvars
+*.sops.*
+*.age
+*.pem
+*.key
