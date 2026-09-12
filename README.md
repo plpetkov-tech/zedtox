@@ -125,7 +125,9 @@ Zed's built-in vim keys still apply:
 - `s` / `S`: Sneak — jump to the next / previous occurrence of two characters (the `motion` pack;
   vim's `s` and `S` live on as `c l` and `c c`)
 
-With Copilot on: `tab` or `alt-l` accepts, `alt-k` / `alt-j` accept the next word / line, `alt-]` / `alt-[` cycle, `alt-\` asks for a suggestion. Completion docs appear beside the menu (Zed places them; not configurable).
+With Copilot on: `tab` accepts, `ctrl-alt-k` / `ctrl-alt-j` accept the next word / line, `alt-]` / `alt-[` cycle, `alt-\` asks for a suggestion. Completion docs appear beside the menu (Zed places them; not configurable).
+
+**On a tiling WM, alt is usually the WM's modifier** (sway's `$mod`), so bare `alt-…` keys never reach Zed. Everything here avoids them: Copilot's partial accepts moved from `alt-k`/`alt-j` to `ctrl-alt-k`/`ctrl-alt-j`, and the picker keys are ctrl chords.
 
 ## Copilot
 

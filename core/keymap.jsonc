@@ -87,6 +87,19 @@
       "ctrl-space": "picker::ToggleMultiSelect" // mark entries, open them together
     }
   },
+  // ---------------------------------------------------------------- Copilot accepts
+  // Zed's defaults for partial accepts are alt-k / alt-j, and a tiling WM eats
+  // them (sway's $mod is alt: focus up / focus down). Same keys plus ctrl.
+  // Accepting the whole suggestion is `tab`, which no WM takes.
+  // Only live while ghost text is showing, so ctrl-alt-j reaches the workspace
+  // sidebar the rest of the time.
+  {
+    "context": "Editor && edit_prediction",
+    "bindings": {
+      "ctrl-alt-k": "editor::AcceptNextWordEditPrediction",
+      "ctrl-alt-j": "editor::AcceptNextLineEditPrediction"
+    }
+  },
   {
     "context": "Editor && vim_mode == visual && !menu",
     "bindings": {
