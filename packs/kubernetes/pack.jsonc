@@ -1,0 +1,85 @@
+{
+  "description": "Kubernetes manifests: versioned k8s schema, CRD schemas auto-detected from apiVersion/kind, schema modeline + CRD extraction + server-side dry-run tasks",
+  "requires": [
+    {
+      "bin": "yaml-language-server",
+      "why": "Kubernetes schema + CRD auto-detection happen inside yaml-ls",
+      "install": { "pacman": "yaml-language-server", "brew": "yaml-language-server", "npm": "yaml-language-server", "scoop": "yaml-language-server" }
+    },
+    {
+      "bin": "kubectl",
+      "why": "space y c (extract CRD schemas from your cluster), space k d / k v (diff / server dry-run)",
+      "optional": true,
+      "install": { "pacman": "kubectl", "brew": "kubectl", "apt": "kubectl", "winget": "Kubernetes.kubectl", "scoop": "kubectl" }
+    }
+  ],
+  "settings": {
+    "lsp": {
+      "yaml-language-server": {
+        "settings": {
+          "yaml": {
+            "kubernetesVersion": "${k8s_version}",
+            // For files matched below: core kinds get their exact schema, CRDs are fetched
+            // from <crd_store_url>/<group>/<kind>_<version>.json. Unknown CRDs: `space y a`.
+            "kubernetesCRDStore": { "enable": true, "url": "${crd_store_url}" },
+            "schemas": {
+              "kubernetes": ["${k8s_globs}", "${k8s_extra_globs}"]
+            }
+          }
+        }
+      }
+    }
+  },
+  "keymap": [
+    {
+      "context": "Editor && vim_mode == normal && !menu",
+      "bindings": {
+        "space y a": ["task::Spawn", { "task_name": "k8s: add schema modeline to current file" }],
+        "space y c": ["task::Spawn", { "task_name": "k8s: extract CRD schemas from current kube context" }],
+        "space y r": "editor::RestartLanguageServer",
+        "space k d": ["task::Spawn", { "task_name": "k8s: kubectl diff current file" }],
+        "space k v": ["task::Spawn", { "task_name": "k8s: server-side dry-run current file" }]
+      }
+    }
+  ],
+  "tasks": [
+    {
+      // Like yaml-companion's auto-annotate: reads apiVersion/kind of each document and
+      // inserts `# yaml-language-server: $schema=...` (local extracted CRD > datree > yannh).
+      "label": "k8s: add schema modeline to current file",
+      "command": "${python}",
+      "args": [
+        "${repo}/scripts/k8s_schema_annotate.py",
+        "--k8s-version", "${k8s_version}",
+        "--crd-store", "${crd_store_url}",
+        "--local-crds", "${data_dir}/crds",
+        "$ZED_FILE"
+      ],
+      "save": "current",
+      "reveal": "no_focus",
+      "hide": "on_success"
+    },
+    {
+      // Replaces `curl ... crd-extractor.sh | bash`: reads CRDs via kubectl, writes JSON
+      // schemas to ${data_dir}/crds (outside git; it's your cluster's data).
+      "label": "k8s: extract CRD schemas from current kube context",
+      "command": "${python}",
+      "args": ["${repo}/scripts/crd_extract.py", "--out", "${data_dir}/crds"],
+      "reveal": "always"
+    },
+    {
+      "label": "k8s: kubectl diff current file",
+      "command": "kubectl",
+      "args": ["diff", "-f", "$ZED_FILE"],
+      "save": "current",
+      "reveal": "always"
+    },
+    {
+      "label": "k8s: server-side dry-run current file",
+      "command": "kubectl",
+      "args": ["apply", "--dry-run=server", "-f", "$ZED_FILE"],
+      "save": "current",
+      "reveal": "always"
+    }
+  ]
+}

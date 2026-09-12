@@ -1,0 +1,10 @@
+pipeline {
+    agent any
+    stages {
+        stage('Lint') {
+            steps {
+                sh 'helm lint charts/demo'
+            }
+        }
+    }
+}

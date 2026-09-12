@@ -1,0 +1,4 @@
+/dist/
+/local.jsonc
+__pycache__/
+*.pyc

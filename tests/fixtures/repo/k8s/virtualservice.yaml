@@ -1,0 +1,13 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: web
+spec:
+  hosts:
+    - web.example.com
+  http:
+    - route:
+        - destination:
+            host: web
+            port:
+              number: 80

@@ -1,0 +1,17 @@
+{
+  "description": "Markdown (off by default): marksman for links, headings, references across docs/runbooks",
+  "requires": [
+    {
+      "bin": "marksman",
+      "why": "go-to-definition for links, completion of headings/files, broken-link diagnostics",
+      "optional": true,
+      "install": { "pacman": "marksman", "brew": "marksman", "scoop": "marksman" }
+    }
+  ],
+  "settings": {
+    "auto_install_extensions": { "marksman": true },
+    "granted_extension_capabilities": [
+      { "kind": "download_file", "host": "github.com", "path": ["artempyanykh", "marksman", "**"] }
+    ]
+  }
+}

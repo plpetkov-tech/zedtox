@@ -1,0 +1,114 @@
+{
+  "description": "Helm charts: helm_ls (.Values completion/hover/go-to-definition, template function docs, helm lint) + Kubernetes schema inside templates",
+  "requires": [
+    {
+      "bin": "helm_ls",
+      "why": "Helm language server. If missing, the helm extension downloads the pinned v0.5.4 from github.com/mrjosh/helm-ls (the only download it's allowed)",
+      "optional": true,
+      "install": {
+        "brew": "helm-ls",
+        "scoop": "helm-ls",
+        "manual": "optional: put helm_ls from https://github.com/mrjosh/helm-ls/releases (check the sha256) on PATH, e.g. ~/.local/bin; otherwise the extension fetches the pinned build"
+      }
+    },
+    {
+      "bin": "yaml-language-server",
+      "why": "helm_ls runs it for Kubernetes schema completion/validation inside templates",
+      "install": { "pacman": "yaml-language-server", "brew": "yaml-language-server", "npm": "yaml-language-server", "scoop": "yaml-language-server" }
+    },
+    {
+      "bin": "helm",
+      "why": "space h r (render current template) / space h l (lint chart)",
+      "optional": true,
+      "install": { "pacman": "helm", "brew": "helm", "apt": "helm", "winget": "Helm.Helm", "scoop": "helm" }
+    }
+  ],
+  "settings": {
+    "auto_install_extensions": { "helm": true },
+    // The helm extension (cabrinha/helm.zed) uses helm_ls from PATH if present; otherwise it may
+    // download exactly the pinned helm-ls release from this one GitHub repo, nothing else.
+    "granted_extension_capabilities": [
+      { "kind": "download_file", "host": "github.com", "path": ["mrjosh", "helm-ls", "**"] }
+    ],
+    "file_types": {
+      "Helm": [
+        "**/templates/**/*.tpl",
+        "**/templates/**/*.yaml",
+        "**/templates/**/*.yml",
+        "**/templates/**/NOTES.txt",
+        "**/helmfile.d/**/*.yaml",
+        "**/helmfile.d/**/*.yml",
+        "**/values*.yaml"
+      ]
+    },
+    "languages": {
+      "Helm": {
+        "tab_size": 2,
+        "format_on_save": "off",
+        "prettier": { "allowed": false }
+      }
+    },
+    "lsp": {
+      // Key is the extension's server id "helm" (not "helm_ls"); settings are flat,
+      // the extension nests them under "helm-ls" and fills yamlls.path from PATH.
+      "helm": {
+        "settings": {
+          "logLevel": "info",
+          "valuesFiles": {
+            "mainValuesFile": "values.yaml",
+            "lintOverlayValuesFile": "values.lint.yaml",
+            "additionalValuesFilesGlobPattern": "values*.yaml"
+          },
+          "helmLint": { "enabled": true, "ignoredMessages": [] },
+          "yamlls": {
+            "enabled": true,
+            "enabledForFilesGlob": "*.{yaml,yml}",
+            "diagnosticsLimit": 50,
+            "showDiagnosticsDirectly": false,
+            "initTimeoutSeconds": 5,
+            "config": {
+              "schemas": { "kubernetes": "templates/**" },
+              "completion": true,
+              "hover": true,
+              "kubernetesVersion": "${k8s_version}",
+              "kubernetesCRDStore": { "enable": true, "url": "${crd_store_url}" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "keymap": [
+    {
+      "context": "Editor && vim_mode == normal && !menu",
+      "bindings": {
+        "space h r": ["task::Spawn", { "task_name": "helm: render current template" }],
+        "space h a": ["task::Spawn", { "task_name": "helm: render whole chart" }],
+        "space h l": ["task::Spawn", { "task_name": "helm: lint chart" }]
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "helm: render current template",
+      "command": "${python}",
+      "args": ["${repo}/scripts/helm_render.py", "template", "$ZED_FILE"],
+      "save": "all",
+      "reveal": "always"
+    },
+    {
+      "label": "helm: render whole chart",
+      "command": "${python}",
+      "args": ["${repo}/scripts/helm_render.py", "chart", "$ZED_FILE"],
+      "save": "all",
+      "reveal": "always"
+    },
+    {
+      "label": "helm: lint chart",
+      "command": "${python}",
+      "args": ["${repo}/scripts/helm_render.py", "lint", "$ZED_FILE"],
+      "save": "all",
+      "reveal": "always"
+    }
+  ]
+}

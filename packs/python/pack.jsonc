@@ -1,0 +1,51 @@
+{
+  "description": "Python: basedpyright (completion + docstrings, hover, inlay hints, import fixes) + ruff (lint, format on save, import sorting)",
+  "requires": [
+    {
+      "bin": "basedpyright-langserver",
+      "zed_dir": "basedpyright",
+      "why":"types, completion docs, inlay hints. Not in Arch's repos: install the npm package into ~/.local (no root, no install scripts). If it's missing, Zed downloads the same npm package itself",
+      "install": {
+        "npm": "basedpyright",
+        "pipx": "basedpyright",
+        "brew": "basedpyright"
+      }
+    },
+    {
+      "bin": "ruff",
+      "why": "lint diagnostics, formatting, organize imports",
+      "install": { "pacman": "ruff", "brew": "ruff", "pipx": "ruff", "winget": "astral-sh.ruff", "scoop": "ruff" }
+    }
+  ],
+  "settings": {
+    "languages": {
+      "Python": {
+        "tab_size": 4,
+        // To use pacman's pyright instead (no inlay hints), in local.jsonc:
+        //   "settings": { "languages": { "Python": { "language_servers":
+        //     { "$replace": ["pyright", "ruff", "!basedpyright", "..."] } } } }
+        "language_servers": ["basedpyright", "ruff", "!pyright", "!ty", "!pyrefly", "!pylsp", "..."],
+        // Zed's default formatter for Python is ruff, and it also organizes imports on format.
+        "format_on_save": "on"
+      }
+    },
+    "lsp": {
+      "basedpyright": {
+        "settings": {
+          "basedpyright.analysis": {
+            // "recommended" (basedpyright's default) is very strict for scripts; "standard" is pyright's.
+            "typeCheckingMode": "standard",
+            "diagnosticMode": "openFilesOnly",
+            "autoImportCompletions": true,
+            "inlayHints": {
+              "variableTypes": true,
+              "callArgumentNames": true,
+              "functionReturnTypes": true,
+              "genericTypes": false
+            }
+          }
+        }
+      }
+    }
+  }
+}

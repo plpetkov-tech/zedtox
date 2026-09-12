@@ -1,0 +1,73 @@
+{
+  // A literal $ outside a placeholder is written \\$ in these files.
+  "include | nindent": {
+    "prefix": "inc",
+    "body": ["{{- include \"${1:chart.labels}\" . | nindent ${2:4} }}$0"],
+    "description": "include a named template, re-indented"
+  },
+  "toYaml | nindent": {
+    "prefix": "toyaml",
+    "body": ["{{- toYaml .Values.${1:resources} | nindent ${2:12} }}$0"],
+    "description": "render a values subtree as YAML"
+  },
+  "with block": {
+    "prefix": "with",
+    "body": ["{{- with .Values.${1:nodeSelector} }}", "${2:nodeSelector}:", "  {{- toYaml . | nindent ${3:8} }}", "{{- end }}$0"],
+    "description": "render a block only when the value is set"
+  },
+  "if block": {
+    "prefix": "if",
+    "body": ["{{- if .Values.${1:enabled} }}", "$0", "{{- end }}"],
+    "description": "conditional block"
+  },
+  "if/else block": {
+    "prefix": "ifelse",
+    "body": ["{{- if ${1:.Values.enabled} }}", "$2", "{{- else }}", "$0", "{{- end }}"],
+    "description": "conditional with else"
+  },
+  "range over map": {
+    "prefix": "rangemap",
+    "body": ["{{- range \\$${1:key}, \\$${2:value} := .Values.${3:env} }}", "$0", "{{- end }}"],
+    "description": "iterate key/value pairs"
+  },
+  "range over list": {
+    "prefix": "range",
+    "body": ["{{- range .Values.${1:items} }}", "$0", "{{- end }}"],
+    "description": "iterate a list (. is the item)"
+  },
+  "define named template": {
+    "prefix": "define",
+    "body": ["{{- define \"${1:chart.name}\" -}}", "$0", "{{- end }}"],
+    "description": "define a partial (usually in _helpers.tpl)"
+  },
+  "required value": {
+    "prefix": "required",
+    "body": ["{{ required \"${1:.Values.image.tag is required}\" .Values.${2:image.tag} }}$0"],
+    "description": "fail rendering when a value is missing"
+  },
+  "default value": {
+    "prefix": "default",
+    "body": ["{{ .Values.${1:key} | default ${2:\"value\"} }}$0"],
+    "description": "value with a fallback"
+  },
+  "quote value": {
+    "prefix": "quote",
+    "body": ["{{ .Values.${1:key} | quote }}$0"],
+    "description": "render a value as a quoted string"
+  },
+  "root context": {
+    "prefix": "root",
+    "body": ["{{ \\$.Values.${1:key} }}$0"],
+    "description": "reach .Values from inside range/with"
+  },
+  "tpl": {
+    "prefix": "tpl",
+    "body": ["{{ tpl .Values.${1:key} . }}$0"],
+    "description": "render a value that itself contains template syntax"
+  },
+  "checksum annotation": {
+    "prefix": "checksum",
+    "body": ["checksum/${1:config}: {{ include (print \\$.Template.BasePath \"/${2:configmap.yaml}\") . | sha256sum }}$0"],
+    "description": "roll pods when a rendered ConfigMap/Secret changes"
+  }
+}

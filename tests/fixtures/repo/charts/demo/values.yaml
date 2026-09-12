@@ -1,0 +1,12 @@
+# Number of pods.
+replicaCount: 2
+image:
+  repository: nginx
+  # Leave empty to use .Chart.AppVersion.
+  tag: ""
+service:
+  port: 80
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi

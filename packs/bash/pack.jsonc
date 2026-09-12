@@ -1,0 +1,49 @@
+{
+  "description": "Bash/sh: bash-language-server with shellcheck diagnostics and shfmt formatting (explainshell off: no code leaves the machine)",
+  "requires": [
+    {
+      "bin": "bash-language-server",
+      "zed_dir": "bash-language-server",
+      "why":"completion, hover docs for builtins/commands, go-to-definition, symbols",
+      "install": { "pacman": "bash-language-server", "brew": "bash-language-server", "npm": "bash-language-server" }
+    },
+    {
+      "bin": "shellcheck",
+      "why": "lint diagnostics (bash-ls runs it automatically)",
+      "install": { "pacman": "shellcheck", "apt": "shellcheck", "brew": "shellcheck", "dnf": "ShellCheck", "winget": "koalaman.shellcheck", "scoop": "shellcheck" }
+    },
+    {
+      "bin": "shfmt",
+      "why": "formatting via space c f (bash-ls runs it)",
+      "install": { "pacman": "shfmt", "apt": "shfmt", "brew": "shfmt", "dnf": "shfmt", "winget": "mvdan.shfmt", "scoop": "shfmt" }
+    }
+  ],
+  "settings": {
+    "file_types": {
+      "Shell Script": [".envrc", "*.envrc", ".bash_aliases", "*.bats"]
+    },
+    "languages": {
+      "Shell Script": {
+        "tab_size": 2,
+        "hard_tabs": false,
+        "formatter": "language_server",
+        "format_on_save": "off"
+      }
+    },
+    "lsp": {
+      "bash-language-server": {
+        "settings": {
+          "bashIde": {
+            "explainshellEndpoint": "",
+            "shellcheckArguments": "--external-sources",
+            "includeAllWorkspaceSymbols": false,
+            "shfmt": {
+              "caseIndent": true,
+              "binaryNextLine": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

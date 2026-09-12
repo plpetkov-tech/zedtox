@@ -1,0 +1,51 @@
+// Pack "__NAME__". Enable it by adding "__NAME__" to "packs" in config.jsonc, then
+// `python3 zedcfg.py audit` (what it's allowed to do) and `python3 zedcfg.py install`.
+// Delete whatever you don't need; every key is optional.
+{
+  "description": "__NAME__: what this pack adds",
+
+  // Tools this pack expects on PATH. `zedcfg.py doctor` checks them and prints the install
+  // command for your package manager. Prefer your distro's signed packages.
+  "requires": [
+    // "zed_dir" is the folder name Zed uses when it downloads this server itself; with it,
+    // `doctor --clean-downloads` can delete that copy once your PATH install supersedes it.
+    // { "bin": "some-language-server", "why": "completion + hover", "optional": false, "zed_dir": "some-language-server",
+    //   "install": { "pacman": "pkg", "apt": "pkg", "brew": "pkg", "winget": "Vendor.Pkg", "scoop": "pkg",
+    //                "npm": "pkg", "pipx": "pkg", "manual": "how-to" } }
+    // (npm installs are printed as `npm install --global --prefix ~/.local --ignore-scripts pkg`)
+  ],
+
+  // Any Zed settings. Objects merge, lists append (wrap a value in {"$replace": ...} to replace).
+  "settings": {
+    // Extensions: only add ones you've looked at. Grant each one the minimum it needs:
+    // "auto_install_extensions": { "some-extension": true },
+    // "granted_extension_capabilities": [
+    //   { "kind": "download_file", "host": "github.com", "path": ["owner", "repo", "**"] },
+    //   { "kind": "npm:install", "package": "exact-package-name" },
+    //   { "kind": "process:exec", "command": "exact-binary", "args": ["**"] }
+    // ],
+
+    // Map file names/globs to a language:
+    // "file_types": { "YAML": ["*.myconf"] },
+
+    // Per-language behaviour and which servers run:
+    // "languages": { "YAML": { "tab_size": 2 } },
+
+    // Schemas for YAML files (merged with the other packs'):
+    // "lsp": { "yaml-language-server": { "settings": { "yaml": { "schemas": {
+    //   "https://www.schemastore.org/some-schema.json": ["some/path/*.yaml"]
+    // } } } } }
+  },
+
+  // Keybindings, appended after core's. Put leader keys in the vim normal-mode context.
+  "keymap": [
+    // { "context": "Editor && vim_mode == normal && !menu",
+    //   "bindings": { "space z z": ["task::Spawn", { "task_name": "__NAME__: do the thing" }] } }
+  ],
+
+  // Tasks (listed under space r r). ${repo}, ${python}, ${data_dir} and config vars are filled in;
+  // $ZED_FILE, $ZED_WORKTREE_ROOT etc. are Zed's own.
+  "tasks": [
+    // { "label": "__NAME__: do the thing", "command": "some-cli", "args": ["$ZED_FILE"], "save": "current" }
+  ]
+}

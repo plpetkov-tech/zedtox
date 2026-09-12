@@ -1,0 +1,31 @@
+{
+  "description": "Dockerfile: dockerfile-language-server (instruction docs, completion, diagnostics). Compose files stay YAML (compose-spec schema via yaml-ls)",
+  "requires": [
+    {
+      "bin": "docker-langserver",
+      "why": "Dockerfile completion, hover docs, diagnostics",
+      "install": { "pacman": "dockerfile-language-server", "npm": "dockerfile-language-server-nodejs" }
+    }
+  ],
+  "settings": {
+    "auto_install_extensions": { "dockerfile": true },
+    // Fallback only if docker-langserver isn't on PATH: this one npm package, nothing else.
+    "granted_extension_capabilities": [
+      { "kind": "npm:install", "package": "dockerfile-language-server-nodejs" }
+    ],
+    "file_types": {
+      "Dockerfile": ["Dockerfile.*", "*.Dockerfile", "*.dockerfile", "Containerfile.*"],
+      // The extension would turn these into "Docker Compose", served only by Docker Inc.'s
+      // separately downloaded server. As YAML they get yaml-ls + the compose-spec schema.
+      "YAML": ["docker-compose.yml", "docker-compose.yaml", "docker-compose.*.yml", "docker-compose.*.yaml", "compose.yml", "compose.yaml"]
+    },
+    "languages": {
+      "Dockerfile": {
+        "language_servers": ["dockerfile-language-server", "!docker-language-server", "..."]
+      },
+      "Docker Compose": {
+        "language_servers": ["!docker-language-server", "..."]
+      }
+    }
+  }
+}

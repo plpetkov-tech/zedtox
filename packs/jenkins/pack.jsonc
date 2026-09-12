@@ -1,0 +1,17 @@
+{
+  "description": "Jenkinsfile / Groovy: syntax highlighting only. The groovy extension's LSP is off (it would fetch an unpinned jar and doesn't know the pipeline DSL)",
+  "requires": [],
+  "settings": {
+    "auto_install_extensions": { "groovy": true },
+    // No capability grants: even if the LSP were switched on, the extension can't download anything.
+    "file_types": {
+      "Groovy": ["Jenkinsfile", "Jenkinsfile.*", "*.Jenkinsfile", "*.jenkinsfile", "**/vars/*.groovy"]
+    },
+    "languages": {
+      "Groovy": {
+        "enable_language_server": false,
+        "tab_size": 4
+      }
+    }
+  }
+}

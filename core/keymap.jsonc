@@ -1,0 +1,134 @@
+// core/keymap.jsonc - Space leader (LazyVim-flavoured), the two global toggles,
+// and neutralised AI keys. Later entries win, and packs append their own blocks.
+// Zed's built-in vim keys stay as they are: gd gD gy gI  grr grn gra  K/gh  ]d [d  ]c [c  gc  gs gS  ctrl-w ...
+[
+  // ---------------------------------------------------------------- toggles (any mode)
+  // These work in vim AND vanilla mode, so switching back is never a hassle.
+  {
+    "context": "Workspace",
+    "bindings": {
+      "ctrl-alt-shift-a": "settings_profile_selector::Toggle", // AI: Disabled <-> Copilot
+      "ctrl-alt-shift-v": "workspace::ToggleVimMode" // vim <-> vanilla (VSCode-style)
+    }
+  },
+
+  // ---------------------------------------------------------------- Space leader
+  // Lives only in vim normal/visual mode, so vanilla mode never sees it.
+  // Press space and wait: which-key lists what follows.
+  {
+    "context": "Editor && (vim_mode == normal || vim_mode == visual) && !menu",
+    "bindings": {
+      "space space": "file_finder::Toggle",
+      "space /": "pane::DeploySearch",
+      "space ,": "tab_switcher::Toggle",
+      "space e": "project_panel::ToggleFocus",
+      "ctrl-n": "project_panel::ToggleFocus", // nvim-tree habit
+
+      // files
+      "space f f": "file_finder::Toggle",
+      "space f r": "projects::OpenRecent",
+      "space f n": "workspace::NewFile",
+      "space f s": "workspace::Save",
+
+      // search / symbols
+      "space s s": "outline::Toggle",
+      "space s shift-s": "project_symbols::Toggle",
+      "space s g": "pane::DeploySearch",
+
+      // code (LSP)
+      "space c a": "editor::ToggleCodeActions",
+      "space c r": "editor::Rename",
+      "space c f": "editor::Format",
+      "space c d": "editor::Hover",
+      "space c l": "lsp_tool::ToggleMenu",
+      "space c shift-r": "editor::RestartLanguageServer",
+      "space x x": "diagnostics::Deploy",
+
+      // git
+      "space g g": "git_panel::ToggleFocus",
+      "space g b": "git::Blame",
+      "space g l": "editor::ToggleGitBlameInline",
+      "space g d": "editor::ToggleSelectedDiffHunks",
+
+      // tasks (every pack adds its own; this lists them all)
+      "space r r": "task::Spawn",
+      "space r l": "task::Rerun",
+
+      // toggles
+      "space t c": "settings_profile_selector::Toggle", // Copilot on/off
+      "space t v": "workspace::ToggleVimMode", // vanilla mode
+      "space t i": "editor::ToggleInlayHints",
+      "space t w": "editor::ToggleSoftWrap",
+      "space t d": "editor::ToggleInlineDiagnostics",
+      "space t m": "editor::ToggleMinimap",
+      "space t z": "workspace::ToggleCenteredLayout",
+      "space t s": "workspace::ToggleWorktreeSecurity", // trust / restrict this folder
+
+      // windows / buffers / terminal
+      "space w v": "pane::SplitRight",
+      "space w s": "pane::SplitDown",
+      "space w z": "workspace::ToggleZoom",
+      "space b d": "pane::CloseActiveItem",
+      "space o t": "terminal_panel::ToggleFocus"
+    }
+  },
+  {
+    "context": "Editor && vim_mode == visual && !menu",
+    "bindings": {
+      "space c f": "editor::FormatSelections"
+    }
+  },
+  {
+    "context": "ProjectPanel && not_editing",
+    "bindings": {
+      "ctrl-n": "workspace::ToggleLeftDock"
+    }
+  },
+
+  // ---------------------------------------------------------------- AI keys, neutralised
+  // Inert anyway while disable_ai is on (and in the Copilot profile the agent
+  // stays disabled). This keeps them from opening anything if Zed changes that.
+  {
+    "context": "Workspace",
+    "bindings": {
+      "ctrl-?": null
+    }
+  },
+  {
+    "context": "Editor && mode == full",
+    "bindings": {
+      "ctrl->": null
+    }
+  },
+  {
+    "context": "!AcpThread > Editor && mode == full",
+    "bindings": {
+      "ctrl-enter": "editor::NewlineBelow" // was: inline assistant
+    }
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      "ctrl-enter": ["terminal::SendKeystroke", "ctrl-enter"], // was: inline assistant
+      "ctrl->": null
+    }
+  },
+  {
+    "context": "GitCommit > Editor && mode == auto_height",
+    "bindings": {
+      "alt-l": null // was: generate commit message
+    }
+  },
+  {
+    "context": "CommitEditor > Editor",
+    "bindings": {
+      "alt-l": null
+    }
+  },
+  {
+    "context": "vim_mode == insert",
+    "bindings": {
+      "ctrl-x ctrl-a": null // was: inline assistant
+    }
+  }
+]

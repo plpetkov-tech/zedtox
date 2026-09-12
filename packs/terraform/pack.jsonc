@@ -1,0 +1,25 @@
+{
+  "description": "Terraform/HCL (off by default): terraform-ls from PATH, or the pinned HashiCorp release (the only download allowed)",
+  "requires": [
+    {
+      "bin": "terraform-ls",
+      "why": "completion with provider docs, hover, validation, formatting",
+      "optional": true,
+      "install": {
+        "brew": "hashicorp/tap/terraform-ls",
+        "scoop": "terraform-ls",
+        "manual": "optional: terraform-ls from https://releases.hashicorp.com/terraform-ls/ (check SHA256SUMS + signature) on PATH; otherwise the extension downloads it from releases.hashicorp.com"
+      }
+    }
+  ],
+  "settings": {
+    "auto_install_extensions": { "terraform": true },
+    "granted_extension_capabilities": [
+      { "kind": "download_file", "host": "releases.hashicorp.com", "path": ["terraform-ls", "**"] }
+    ],
+    "languages": {
+      "Terraform": { "tab_size": 2, "format_on_save": "on" },
+      "Terraform Vars": { "tab_size": 2, "format_on_save": "on" }
+    }
+  }
+}

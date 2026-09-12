@@ -1,0 +1,60 @@
+{
+  // A literal $ outside a placeholder is written \\$ in these files.
+  "schema modeline": {
+    "prefix": "schema",
+    "body": ["# yaml-language-server: \\$schema=${1:https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/group/kind_v1.json}", "$0"],
+    "description": "Pin a JSON schema for this YAML document (space y a does it automatically from apiVersion/kind)"
+  },
+  "schema none": {
+    "prefix": "schema-none",
+    "body": ["# yaml-language-server: \\$schema=none", "$0"],
+    "description": "Disable schema validation for this YAML document"
+  },
+  "hardened container securityContext": {
+    "prefix": "k8s-secctx",
+    "body": [
+      "securityContext:",
+      "  runAsNonRoot: true",
+      "  runAsUser: ${1:10001}",
+      "  runAsGroup: ${2:10001}",
+      "  allowPrivilegeEscalation: false",
+      "  readOnlyRootFilesystem: true",
+      "  capabilities:",
+      "    drop: [\"ALL\"]",
+      "  seccompProfile:",
+      "    type: RuntimeDefault",
+      "$0"
+    ],
+    "description": "Restricted-PSS compliant container securityContext"
+  },
+  "default-deny NetworkPolicy": {
+    "prefix": "k8s-netpol-deny",
+    "body": [
+      "apiVersion: networking.k8s.io/v1",
+      "kind: NetworkPolicy",
+      "metadata:",
+      "  name: default-deny-all",
+      "  namespace: ${1:default}",
+      "spec:",
+      "  podSelector: {}",
+      "  policyTypes:",
+      "    - Ingress",
+      "    - Egress",
+      "$0"
+    ],
+    "description": "Deny all ingress and egress for every pod in the namespace"
+  },
+  "resources requests/limits": {
+    "prefix": "k8s-resources",
+    "body": [
+      "resources:",
+      "  requests:",
+      "    cpu: ${1:100m}",
+      "    memory: ${2:128Mi}",
+      "  limits:",
+      "    memory: ${3:256Mi}",
+      "$0"
+    ],
+    "description": "Container resources (no CPU limit, memory limit set)"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "main entrypoint": {
+    "prefix": "main",
+    "body": [
+      "def main() -> int:",
+      "    ${1:pass}",
+      "    return 0",
+      "",
+      "",
+      "if __name__ == \"__main__\":",
+      "    raise SystemExit(main())",
+      "$0"
+    ],
+    "description": "main() + __main__ guard"
+  },
+  "argparse CLI": {
+    "prefix": "cli",
+    "body": [
+      "import argparse",
+      "",
+      "",
+      "def main() -> int:",
+      "    parser = argparse.ArgumentParser(description=\"${1:what it does}\")",
+      "    parser.add_argument(\"${2:path}\")",
+      "    args = parser.parse_args()",
+      "    $0",
+      "    return 0",
+      "",
+      "",
+      "if __name__ == \"__main__\":",
+      "    raise SystemExit(main())"
+    ],
+    "description": "argparse-based script skeleton"
+  }
+}

@@ -1,0 +1,215 @@
+// core/settings.jsonc - applies to every machine and every pack.
+// Language specifics live in packs/<name>/pack.jsonc. Machine specifics go in local.jsonc.
+{
+  // ======================================================================= AI detox
+  // Master switch: agent panel, threads sidebar, inline assistant, commit-message
+  // generation, MCP and edit predictions are all off. Zed's future AI features
+  // land behind this switch too.
+  //
+  // Zed only creates its Copilot object while AI is enabled, so switching this
+  // back off at runtime (the Copilot profile) has to re-initialise it. If Copilot
+  // won't wake up that way, set "ai_kill_switch": false in local.jsonc: everything
+  // below stays off, and the Copilot profile becomes a plain provider switch.
+  "disable_ai": "${ai_kill_switch}",
+  // Belt and braces, so the Copilot profile below can't bring anything else back.
+  "agent": {
+    "enabled": false,
+    "button": false,
+    "show_merge_conflict_indicator": false
+  },
+  "context_servers": {},
+  "agent_servers": {},
+  "toolbar": {
+    "agent_review": false
+  },
+  "edit_predictions": {
+    "provider": "none",
+    "mode": "eager",
+    "allow_data_collection": "no",
+    // Files Copilot never sees, even when it's on. Added to Zed's own defaults
+    // (.env, *.pem, *.key, ...).
+    "disabled_globs": [
+      "**/.env*",
+      "**/*secret*.yaml",
+      "**/*secret*.yml",
+      "**/*Secret*.yaml",
+      "**/*.sops.*",
+      "**/*.age",
+      "**/.kube/**",
+      "**/*kubeconfig*",
+      "**/*.tfvars",
+      "**/*.tfstate*",
+      "**/id_rsa*",
+      "**/id_ed25519*",
+      "**/.netrc",
+      "**/.npmrc",
+      "**/.pypirc",
+      "**/.docker/config.json"
+    ]
+  },
+  // The ONLY way AI comes back: `space t c` (vim) / ctrl-alt-shift-a / palette
+  // "copilot" opens the profile picker. Pick "Copilot" for inline ghost text
+  // (Tab accepts, alt-] / alt-[ cycle), pick "Disabled" to go back to zero AI.
+  "profiles": {
+    "Copilot": {
+      "settings": {
+        "disable_ai": false,
+        "agent": { "enabled": false, "button": false },
+        "edit_predictions": { "provider": "copilot", "mode": "eager" },
+        "show_edit_predictions": true
+      }
+    }
+  },
+
+  // ======================================================================= security
+  // Untrusted folders open in Restricted Mode: their .zed/settings.json is not
+  // applied and no language servers are spawned for them. Trust your code root
+  // once (tick "trust all subdirectories"); random clones stay restricted.
+  "session": {
+    "trust_all_worktrees": false
+  },
+  // Extensions run sandboxed (WASM). By default they may exec anything, download
+  // from anywhere and npm-install anything. Here they get nothing; each pack
+  // grants exactly what its extension needs (see `python3 zedcfg.py audit`).
+  "granted_extension_capabilities": [],
+  "auto_install_extensions": {
+    "html": false
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false,
+    "anthropic_retention": false
+  },
+  // Zed would otherwise npm-install prettier to format JSON, YAML and Markdown.
+  "prettier": {
+    "allowed": false
+  },
+  // Private files: values are redacted on screen (screen-share safe) and the
+  // files are excluded from edit predictions. The list replaces Zed's default,
+  // so the defaults are repeated here.
+  "private_files": [
+    "**/.env*",
+    "**/*.pem",
+    "**/*.key",
+    "**/*.cert",
+    "**/*.crt",
+    "**/secrets.yml",
+    "**/*kubeconfig*",
+    "**/.kube/config",
+    "**/*.tfvars",
+    "**/.netrc"
+  ],
+  "redact_private_values": true,
+
+  // ======================================================================= declutter
+  "title_bar": {
+    "show_sign_in": false,
+    "show_onboarding_banner": false,
+    "show_user_picture": false,
+    "show_branch_status_icon": true
+  },
+  "collaboration_panel": {
+    "button": false
+  },
+  "show_call_status_icon": false,
+
+  // ======================================================================= layout
+  // One sidebar on the left (file tree, outline, git). Dragging panels elsewhere
+  // in Zed is remembered across reinstalls.
+  "project_panel": { "dock": "left" },
+  "outline_panel": { "dock": "left" },
+  "git_panel": { "dock": "left" },
+
+  // ======================================================================= look
+  "theme": {
+    "mode": "dark",
+    "light": "Ayu Light",
+    "dark": "Ayu Dark"
+  },
+  "icon_theme": "Zed (Default)",
+  "ui_font_size": 16,
+  "buffer_font_size": 15,
+  "cursor_blink": false,
+  "current_line_highlight": "all",
+  "colorize_brackets": true,
+  "indent_guides": {
+    "enabled": true,
+    "coloring": "indent_aware"
+  },
+  "tabs": {
+    "file_icons": true,
+    "git_status": true,
+    "show_diagnostics": "errors"
+  },
+  "gutter": {
+    "min_line_number_digits": 3
+  },
+
+  // ======================================================================= editing (vim)
+  // Vim is on by default. `space t v` / ctrl-alt-shift-v / palette "vanilla"
+  // flips to plain mouse-friendly VSCode-style editing and back (Zed remembers
+  // the choice; zedcfg keeps it across reinstalls).
+  "vim_mode": true,
+  "base_keymap": "VSCode",
+  "vim": {
+    // Relative numbers in normal mode, absolute in insert mode and in vanilla mode.
+    "toggle_relative_line_numbers": true,
+    "use_smartcase_find": true,
+    "highlight_on_yank_duration": 200
+  },
+  "which_key": {
+    "enabled": true,
+    "delay_ms": 400
+  },
+  "vertical_scroll_margin": 8,
+  "scroll_beyond_last_line": "one_page",
+  // Keeps the enclosing keys visible at the top in long manifests.
+  "sticky_scroll": {
+    "enabled": true
+  },
+  "use_smartcase_search": true,
+  "lsp_highlight_debounce": 0,
+  "soft_wrap": "none",
+  "format_on_save": "off",
+  "ensure_final_newline_on_save": true,
+  "remove_trailing_whitespace_on_save": true,
+
+  // ======================================================================= language smarts
+  "show_completions_on_input": true,
+  "show_completion_documentation": true,
+  "completion_menu_item_kind": "symbol",
+  "completion_detail_alignment": "left",
+  "auto_signature_help": true,
+  "hover_popover_enabled": true,
+  "hover_popover_delay": 300,
+  "inlay_hints": {
+    "enabled": true,
+    "show_background": true
+  },
+  "diagnostics": {
+    "inline": {
+      "enabled": true
+    }
+  },
+  "completions": {
+    "words": "fallback"
+  },
+
+  // ======================================================================= palette
+  // Typed in the command palette (ctrl-shift-p).
+  "command_aliases": {
+    "W": "workspace::Save",
+    "copilot": "settings_profile_selector::Toggle",
+    "vanilla": "workspace::ToggleVimMode",
+    "trust": "workspace::ToggleWorktreeSecurity"
+  },
+
+  // ======================================================================= no prettier downloads
+  // Zed enables its bundled-on-demand prettier per language; these are the ones you touch.
+  "languages": {
+    "JSON": { "prettier": { "allowed": false } },
+    "JSONC": { "prettier": { "allowed": false } },
+    "YAML": { "prettier": { "allowed": false } },
+    "Markdown": { "prettier": { "allowed": false } }
+  }
+}

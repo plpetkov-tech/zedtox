@@ -1,0 +1,59 @@
+// config.jsonc - which packs are on, plus variables the packs use.
+// Per-machine changes go in local.jsonc (see local.jsonc.example), not here.
+// After editing: python3 zedcfg.py install   (or run the "zed-initiative: reinstall config" task)
+{
+  // Order matters only when two packs set the same scalar (the later one wins, with a warning).
+  // Also available, off by default: terraform, markdown.   `python3 zedcfg.py list` shows all.
+  "packs": [
+    "json",
+    "yaml",
+    "kubernetes",
+    "helm",
+    "python",
+    "bash",
+    "github-actions",
+    "jenkins",
+    "docker"
+  ],
+
+  "vars": {
+    // Zed's master AI switch (disable_ai). true = every AI feature off, including
+    // Copilot, until you pick the "Copilot" settings profile. Set to false only if
+    // the profile can't bring Copilot back at runtime; the agent, MCP servers,
+    // external agents and the AI keybindings stay disabled either way.
+    "ai_kill_switch": true,
+
+    // Kubernetes schema version for manifests and Helm templates (match your clusters).
+    "k8s_version": "1.33.2",
+
+    // Where CRD schemas are looked up by apiVersion/kind (layout: <group>/<kind>_<version>.json).
+    // Default: the public datree catalog (Istio, Argo, Flux, cert-manager, ESO, prometheus-operator...).
+    "crd_store_url": "https://raw.githubusercontent.com/datreeio/CRDs-catalog/main",
+
+    // Which YAML files get the Kubernetes schema. yaml-language-server can't auto-detect this,
+    // so it goes by folder. Files starting with these names are skipped because they have their
+    // own schemas (via SchemaStore) or belong to Helm:
+    "k8s_skip": "!(Chart|kustomization|values|helmfile|skaffold|docker-compose|compose|.gitlab-ci|.pre-commit)",
+    // One line per folder; "**/" is implied in front. Add your own layout here or in local.jsonc,
+    // per repo in .zed/settings.json, or per file with `space y a` (schema modeline).
+    "k8s_globs": [
+      "k8s/**/${k8s_skip}.y?(a)ml",
+      "kubernetes/**/${k8s_skip}.y?(a)ml",
+      "kube/**/${k8s_skip}.y?(a)ml",
+      "manifests/**/${k8s_skip}.y?(a)ml",
+      "deploy/**/${k8s_skip}.y?(a)ml",
+      "deployments/**/${k8s_skip}.y?(a)ml",
+      "kustomize/**/${k8s_skip}.y?(a)ml",
+      "overlays/**/${k8s_skip}.y?(a)ml",
+      "clusters/**/${k8s_skip}.y?(a)ml",
+      "gitops/**/${k8s_skip}.y?(a)ml",
+      "argocd/**/${k8s_skip}.y?(a)ml",
+      "flux/**/${k8s_skip}.y?(a)ml",
+      "flux-system/**/${k8s_skip}.y?(a)ml",
+      "crds/**/${k8s_skip}.y?(a)ml",
+      "*.k8s.y?(a)ml"
+    ],
+    // Your additions (appended to the list above); usually set in local.jsonc.
+    "k8s_extra_globs": []
+  }
+}

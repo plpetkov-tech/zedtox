@@ -1,0 +1,5 @@
+# Not Kubernetes: lives outside the mapped folders, so no k8s schema applies.
+database:
+  host: localhost
+  port: 5432
+features: [a, b]

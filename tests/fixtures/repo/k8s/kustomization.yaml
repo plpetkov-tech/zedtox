@@ -1,0 +1,5 @@
+resources:
+  - deployment.yaml
+  - virtualservice.yaml
+commonLabels:
+  team: platform

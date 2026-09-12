@@ -1,0 +1,24 @@
+// Copy to local.jsonc (gitignored) for per-machine tweaks. Every key is optional.
+{
+  // Turn packs on/off on this machine only.
+  "enable": ["terraform"],
+  "disable": [],
+
+  // Override variables from config.jsonc.
+  "vars": {
+    "k8s_version": "1.31.4",
+    // Folders that hold Kubernetes YAML in your repos, on top of the defaults.
+    "k8s_extra_globs": ["platform/**/${k8s_skip}.y?(a)ml", "environments/**/${k8s_skip}.y?(a)ml"]
+  },
+
+  // Any Zed settings; merged last, so they win. (vim_mode, theme, icon_theme and the
+  // font sizes are kept from what you last picked in Zed; `install --reset-ui` resets them.)
+  "settings": {
+    "terminal": { "font_size": 13 },
+    "wrap_guides": [100]
+  },
+
+  // Extra keymap blocks / tasks, appended after the packs' ones.
+  "keymap": [],
+  "tasks": []
+}

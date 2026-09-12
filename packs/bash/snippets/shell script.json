@@ -1,0 +1,34 @@
+{
+  // A literal $ outside a placeholder is written \\$ in these files.
+  "strict mode header": {
+    "prefix": "strict",
+    "body": [
+      "#!/usr/bin/env bash",
+      "set -Eeuo pipefail",
+      "IFS=\\$'\\n\\t'",
+      "",
+      "$0"
+    ],
+    "description": "bash shebang + fail-fast options"
+  },
+  "cleanup trap": {
+    "prefix": "trap",
+    "body": [
+      "tmp=\"\\$(mktemp -d)\"",
+      "cleanup() { rm -rf -- \"\\$tmp\"; }",
+      "trap cleanup EXIT",
+      "$0"
+    ],
+    "description": "temp dir removed on exit"
+  },
+  "die helper": {
+    "prefix": "die",
+    "body": ["die() { printf '%s\\n' \"\\$*\" >&2; exit 1; }", "$0"],
+    "description": "print to stderr and exit 1"
+  },
+  "require command": {
+    "prefix": "need",
+    "body": ["command -v ${1:kubectl} >/dev/null 2>&1 || die \"${1:kubectl} is required\"", "$0"],
+    "description": "fail early when a tool is missing"
+  }
+}

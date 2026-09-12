@@ -1,0 +1,46 @@
+{
+  "description": "YAML: yaml-language-server with SchemaStore auto-detection (compose, kustomization, GitLab CI, ...); formats via yaml-ls, not prettier",
+  "requires": [
+    {
+      "bin": "yaml-language-server",
+      "zed_dir": "yaml-language-server",
+      "why": "YAML completion with schema docs, hover, validation (helm_ls uses it too)",
+      "install": { "pacman": "yaml-language-server", "brew": "yaml-language-server", "npm": "yaml-language-server", "scoop": "yaml-language-server" }
+    }
+  ],
+  "settings": {
+    "languages": {
+      "YAML": {
+        "tab_size": 2,
+        "formatter": "language_server",
+        "prettier": { "allowed": false },
+        "format_on_save": "off"
+      }
+    },
+    "lsp": {
+      "yaml-language-server": {
+        "settings": {
+          "yaml": {
+            "validate": true,
+            "hover": true,
+            "completion": true,
+            // true would flag every normal manifest (apiVersion/kind/metadata aren't alphabetical).
+            "keyOrdering": false,
+            "format": {
+              "enable": true,
+              "singleQuote": true,
+              "proseWrap": "preserve",
+              "printWidth": 120
+            },
+            // Matches files to schemas by name via schemastore.org's catalog (data, not code).
+            "schemaStore": { "enable": true },
+            // GitLab CI's !reference; add CloudFormation-style tags here if you need them.
+            "customTags": ["!reference sequence"],
+            // Other packs add file -> schema mappings here.
+            "schemas": {}
+          }
+        }
+      }
+    }
+  }
+}

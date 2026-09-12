@@ -1,0 +1,42 @@
+{
+  "description": "GitHub Actions: workflow/action/dependabot schemas pinned above SchemaStore guessing, plus actionlint tasks",
+  "requires": [
+    {
+      "bin": "actionlint",
+      "why": "space r r -> 'gha: actionlint': checks expressions, shell (via shellcheck) and runner labels beyond the schema",
+      "optional": true,
+      "install": { "pacman": "actionlint", "brew": "actionlint", "winget": "rhysd.actionlint", "scoop": "actionlint" }
+    }
+  ],
+  "settings": {
+    "lsp": {
+      "yaml-language-server": {
+        "settings": {
+          "yaml": {
+            "schemas": {
+              "https://www.schemastore.org/github-workflow.json": [".github/workflows/*.yml", ".github/workflows/*.yaml"],
+              "https://www.schemastore.org/github-action.json": ["action.yml", "action.yaml"],
+              "https://www.schemastore.org/dependabot-2.0.json": [".github/dependabot.yml", ".github/dependabot.yaml"]
+            }
+          }
+        }
+      }
+    }
+  },
+  "tasks": [
+    {
+      "label": "gha: actionlint current workflow",
+      "command": "actionlint",
+      "args": ["$ZED_FILE"],
+      "save": "current",
+      "reveal": "always"
+    },
+    {
+      "label": "gha: actionlint all workflows",
+      "command": "actionlint",
+      "cwd": "$ZED_WORKTREE_ROOT",
+      "save": "all",
+      "reveal": "always"
+    }
+  ]
+}

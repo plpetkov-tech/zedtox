@@ -1,0 +1,25 @@
+{
+  "description": "JSON/JSONC: vscode-json-language-server (schema completion for package.json, tsconfig, Zed's own settings, ...), formats via the language server",
+  "requires": [
+    {
+      "bin": "vscode-json-language-server",
+      "zed_dir": "json-language-server",
+      "why":"JSON completion/validation from schemas. If missing, Zed downloads vscode-langservers-extracted from npm",
+      "install": { "pacman": "vscode-json-languageserver", "brew": "vscode-langservers-extracted", "npm": "vscode-langservers-extracted" }
+    }
+  ],
+  "settings": {
+    "languages": {
+      "JSON": {
+        "tab_size": 2,
+        "formatter": "language_server",
+        // package.json version helper that Zed downloads from GitHub; not needed here.
+        "language_servers": ["!package-version-server", "..."]
+      },
+      "JSONC": {
+        "tab_size": 2,
+        "formatter": "language_server"
+      }
+    }
+  }
+}
