@@ -186,11 +186,16 @@ def position_of(text: str, needle: str, occurrence: int = 1) -> tuple[int, int]:
     raise AssertionError(f"'{needle}' not in fixture")
 
 
-# file, key to hover, expected schema-source fragment (None = no schema), expected error text (None = no errors)
+# file, key to hover, expected schema-source fragment (None = no schema), expected error text
+# (None = no errors), and optional inline content. The deliberately broken cases carry their
+# content here so the checks can't be defeated by someone "fixing" the fixture in an editor.
 # Built-in kinds resolve into yannh's _definitions.json, so their source is the yannh repo.
+BAD_DEPLOYMENT = ("apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: broken\nspec:\n  replicass: 2\n"
+                  "  selector:\n    matchLabels:\n      app: broken\n  template:\n    metadata:\n      labels:\n"
+                  "        app: broken\n    spec:\n      containers:\n        - name: broken\n          image: nginx\n")
 CASES = [
     ("k8s/deployment.yaml", "replicas", "yannh/kubernetes-json-schema", None),
-    ("k8s/bad-deployment.yaml", "selector", "yannh/kubernetes-json-schema", "replicass"),
+    ("k8s/bad-deployment.yaml", "selector", "yannh/kubernetes-json-schema", "replicass", BAD_DEPLOYMENT),
     ("k8s/virtualservice.yaml", "hosts", "networking.istio.io/virtualservice", None),
     ("k8s/bad-certificate.yaml", "secretName", "cert-manager.io/certificate", "issuerReff"),
     ("k8s/kustomization.yaml", "resources", "kustomization", None),
@@ -220,10 +225,10 @@ def main() -> int:
         failures += 0 if cond else 1
 
     try:
-        for rel, key, schema, error in CASES:
+        for rel, key, schema, error, *inline in CASES:
             path = FIXTURES / rel
-            text = path.read_text()
-            uri = client.open(path)
+            text = inline[0] if inline else path.read_text()
+            uri = client.open(path, text)
             line, col = position_of(text, key)
             hover = client.hover(uri, line, col, wait_for_schema=bool(schema))
             diags = client.settled_diagnostics(uri, text)

@@ -134,6 +134,7 @@ def main() -> int:
     p.add_argument("--crd-store", default=DATREE)
     p.add_argument("--local-crds", type=Path, default=None, help="directory written by crd_extract.py")
     p.add_argument("--dry-run", action="store_true", help="print the result instead of writing the file")
+    p.add_argument("--force", action="store_true", help="annotate even a Helm template")
     args = p.parse_args()
 
     if args.file.is_dir():
@@ -157,6 +158,11 @@ def main() -> int:
         print(f"{args.file}: not a .yaml/.yml file or a directory", file=sys.stderr)
         return 1
     text = args.file.read_text(encoding="utf-8")
+    if not args.force and ("templates" in args.file.parts or "{{" in text):
+        print(f"{args.file}: looks like a Helm template - helm_ls already applies the Kubernetes "
+              f"schema there, and a modeline would end up in the rendered output. Use --force to override.",
+              file=sys.stderr)
+        return 1
     new_text, report = annotate(text, args.k8s_version, args.crd_store, args.local_crds)
     for line in report:
         print(line)

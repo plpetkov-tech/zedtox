@@ -60,7 +60,8 @@ You can also type these in the command palette (`ctrl-shift-p`): `copilot`, `van
 | `space g g` git panel | `space g b` blame | `space g l` inline blame | `space g d` diff hunk |
 | `space t i` inlay hints | `space t w` soft wrap | `space t d` inline diagnostics | `space t z` zen / `space t m` minimap |
 | `space w v` / `space w s` split | `space w z` zoom | `space b d` close buffer | `space o t` terminal |
-| `space y a` / `space y A` schema modeline: file / folder | `space y c` extract cluster CRDs | `space y r` restart yaml LSP | `space k d` / `space k v` kubectl diff / dry-run |
+| `space y m` map this repo's manifests | `space y a` / `space y A` schema modeline: file / folder | `space y c` extract cluster CRDs | `space y r` restart yaml LSP |
+| `space k d` / `space k v` kubectl diff / dry-run | | | |
 | `space h r` render template | `space h a` render chart | `space h l` helm lint | |
 
 Zed's built-in vim LSP keys still apply:
@@ -111,14 +112,22 @@ just unvalidated — and `space y A` fixes a whole folder in one go.
 
 **Which YAML is Kubernetes?** yaml-language-server can't tell from content, so it goes by folder. `k8s/ kubernetes/ kube/ manifests/ deploy/ deployments/ kustomize/ overlays/ clusters/ gitops/ argocd/ flux/ flux-system/ crds/` and `*.k8s.yaml` are mapped (`k8s_globs` in `config.jsonc`). Inside those folders, `Chart.yaml`, `kustomization.yaml`, `values*.yaml`, compose, skaffold and helmfile files are skipped, because they have their own schemas.
 
-- **Your layout:** add folders in `local.jsonc` → `"vars": {"k8s_extra_globs": ["platform/**/${k8s_skip}.y?(a)ml"]}`.
-- **One repo:** add to its `.zed/settings.json` (applies once the folder is trusted):
-  ```jsonc
-  { "lsp": { "yaml-language-server": { "settings": { "yaml": { "schemas": {
-      "kubernetes": ["env/**/*.yaml"] } } } } } }
-  ```
-- **One file:** `space y a` writes `# yaml-language-server: $schema=…` into each document, based on its `apiVersion`/`kind`. A modeline beats every other mapping and also helps teammates on VS Code.
-- **A whole repo, once:** `space y A` does the same for every manifest in the current file's folder (recursively; Helm templates and values files are skipped, and it's idempotent). After that the repo validates regardless of folder names, for everyone who opens it.
+When a repo doesn't follow those conventions — a monorepo with `apps/*/deploy`, say — you have
+three ways to fix it, in order of how little you have to remember:
+
+- **`space y m`, once per repo (the one to use).** It walks the worktree, finds the files that
+  genuinely are manifests (top-level `apiVersion` + `kind`, no Go templating) and writes *their*
+  folders into the repo's own `.zed/settings.json`. Helm charts, `.github/`, `node_modules` and
+  ordinary config YAML are skipped. Commit that file and the repo validates itself from then on —
+  every branch, every teammate, nothing to remember and no manifests edited. Re-run it after a big
+  restructure. (The worktree has to be trusted for project settings to apply.)
+- **Your own defaults:** if your repos share a layout, put it in `local.jsonc` once →
+  `"vars": {"k8s_extra_globs": ["platform/**/${k8s_skip}.y?(a)ml"]}`.
+- **Per file, when something sits outside any folder rule:** type `schema` in the file and pick from
+  the completion menu (Kubernetes, GitHub workflow, GitLab CI, compose, Ansible, Argo, Prometheus,
+  Renovate, OpenAPI…), or run `space y a` to have the exact schema filled in from `apiVersion`/`kind`.
+  `space y A` does that for a whole folder. A modeline outranks every mapping and travels with the
+  file, so it works for teammates on VS Code or nvim too.
 
 **CRDs are automatic.** In mapped files, yaml-ls resolves `apiVersion`/`kind`: built-in kinds use the Kubernetes schema for `k8s_version`, and CRDs are fetched from the [datree CRDs-catalog](https://github.com/datreeio/CRDs-catalog) (Istio, Argo CD, Flux, cert-manager, External Secrets, prometheus-operator, Gateway API and many more). Hover shows each field's docs and the schema's source.
 
@@ -236,5 +245,5 @@ python3 tests/lsp_smoke.py                  # real yaml-language-server against 
 ## Troubleshooting
 
 - A language feature is missing: `python3 zedcfg.py doctor`, then `space c l` in the file (LSP status and logs), or `zed: open log`.
-- The wrong schema is on a YAML file: hover a key. The popup ends with *Source: …* naming the schema in use. `space y a` pins the right one.
+- The wrong schema (or none) is on a YAML file: hover a key. The popup ends with *Source: …* naming the schema in use. `space y m` fixes it for the repo; typing `schema` picks one for the file.
 - Nothing works in a repo: it's probably untrusted (title-bar Restricted Mode, `space t s`).

@@ -1,0 +1,76 @@
+{
+  // Type "schema" in a YAML file: the completion menu lists these, so picking a
+  // schema for one file is a menu, not a command to remember. A modeline outranks
+  // every folder mapping, and travels with the file for teammates on other editors.
+  // A literal $ outside a placeholder is written \\$ in these files.
+  "schema: GitHub workflow": {
+    "prefix": "schema-gha",
+    "body": ["# yaml-language-server: \\$schema=https://www.schemastore.org/github-workflow.json", "$0"],
+    "description": "GitHub Actions workflow"
+  },
+  "schema: GitHub composite action": {
+    "prefix": "schema-action",
+    "body": ["# yaml-language-server: \\$schema=https://www.schemastore.org/github-action.json", "$0"],
+    "description": "action.yml of a composite/JS action"
+  },
+  "schema: GitLab CI": {
+    "prefix": "schema-gitlab",
+    "body": ["# yaml-language-server: \\$schema=https://gitlab.com/gitlab-org/gitlab-foss/-/raw/master/app/assets/javascripts/editor/schema/ci.json", "$0"],
+    "description": ".gitlab-ci.yml"
+  },
+  "schema: Docker Compose": {
+    "prefix": "schema-compose",
+    "body": ["# yaml-language-server: \\$schema=https://raw.githubusercontent.com/compose-spec/compose-go/master/schema/compose-spec.json", "$0"],
+    "description": "compose.yaml / docker-compose.yml"
+  },
+  "schema: kustomization": {
+    "prefix": "schema-kustomize",
+    "body": ["# yaml-language-server: \\$schema=https://www.schemastore.org/kustomization.json", "$0"],
+    "description": "kustomization.yaml"
+  },
+  "schema: helmfile": {
+    "prefix": "schema-helmfile",
+    "body": ["# yaml-language-server: \\$schema=https://www.schemastore.org/helmfile.json", "$0"],
+    "description": "helmfile.yaml"
+  },
+  "schema: Ansible playbook": {
+    "prefix": "schema-ansible",
+    "body": ["# yaml-language-server: \\$schema=https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/\\$defs/playbook", "$0"],
+    "description": "Ansible playbook"
+  },
+  "schema: Ansible tasks file": {
+    "prefix": "schema-ansible-tasks",
+    "body": ["# yaml-language-server: \\$schema=https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/\\$defs/tasks", "$0"],
+    "description": "Ansible tasks/handlers file"
+  },
+  "schema: Argo Workflows": {
+    "prefix": "schema-argo",
+    "body": ["# yaml-language-server: \\$schema=https://raw.githubusercontent.com/argoproj/argo-workflows/master/api/jsonschema/schema.json", "$0"],
+    "description": "Argo Workflow / WorkflowTemplate"
+  },
+  "schema: Prometheus config": {
+    "prefix": "schema-prometheus",
+    "body": ["# yaml-language-server: \\$schema=https://www.schemastore.org/prometheus.json", "$0"],
+    "description": "prometheus.yml"
+  },
+  "schema: Prometheus rules": {
+    "prefix": "schema-prom-rules",
+    "body": ["# yaml-language-server: \\$schema=https://www.schemastore.org/prometheus.rules.json", "$0"],
+    "description": "alerting/recording rules"
+  },
+  "schema: Alertmanager": {
+    "prefix": "schema-alertmanager",
+    "body": ["# yaml-language-server: \\$schema=https://www.schemastore.org/prometheus-alertmanager.json", "$0"],
+    "description": "alertmanager.yml"
+  },
+  "schema: Renovate": {
+    "prefix": "schema-renovate",
+    "body": ["# yaml-language-server: \\$schema=https://docs.renovatebot.com/renovate-schema.json", "$0"],
+    "description": "renovate config"
+  },
+  "schema: OpenAPI 3.x": {
+    "prefix": "schema-openapi",
+    "body": ["# yaml-language-server: \\$schema=https://www.schemastore.org/openapi-3.X.json", "$0"],
+    "description": "OpenAPI specification"
+  }
+}

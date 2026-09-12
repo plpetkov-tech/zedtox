@@ -19,6 +19,7 @@ sys.path[:0] = [str(REPO), str(REPO / "scripts")]
 
 import crd_extract  # noqa: E402
 import helm_render  # noqa: E402
+import k8s_project_map  # noqa: E402
 import k8s_schema_annotate as annotate_mod  # noqa: E402
 import zedcfg  # noqa: E402
 
@@ -372,6 +373,78 @@ class AnnotateTest(unittest.TestCase):
     def test_templated_documents_skipped(self):
         out, report = annotate_mod.annotate("apiVersion: {{ .Values.api }}\nkind: Thing\n", "1.33.2", self.STORE, None)
         self.assertNotIn("yaml-language-server", out)
+
+
+class ProjectMapTest(unittest.TestCase):
+    """Content-based detection of a repo's manifest folders."""
+
+    def build_repo(self, root: Path) -> None:
+        (root / "apps/pay/deploy").mkdir(parents=True)
+        (root / "apps/pay/deploy/deployment.yaml").write_text("apiVersion: apps/v1\nkind: Deployment\n")
+        (root / "apps/pay/deploy/nested").mkdir()
+        (root / "apps/pay/deploy/nested/svc.yaml").write_text("apiVersion: v1\nkind: Service\n")
+        (root / "chart/templates").mkdir(parents=True)
+        (root / "chart/Chart.yaml").write_text("apiVersion: v2\nname: c\n")
+        (root / "chart/values.yaml").write_text("replicaCount: 1\n")
+        (root / "chart/templates/deploy.yaml").write_text("apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: {{ .x }}\n")
+        (root / ".github/workflows").mkdir(parents=True)
+        (root / ".github/workflows/ci.yml").write_text("name: ci\non: push\n")
+        (root / "svc/src").mkdir(parents=True)
+        (root / "svc/src/config.yaml").write_text("db:\n  host: x\n")
+        (root / "node_modules/pkg").mkdir(parents=True)
+        (root / "node_modules/pkg/k.yaml").write_text("apiVersion: v1\nkind: Pod\n")
+
+    def test_finds_manifest_folders_only(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.build_repo(root)
+            dirs, found = k8s_project_map.manifest_dirs(root)
+            self.assertEqual(found, 2)
+            self.assertEqual({d.as_posix() for d in dirs}, {"apps/pay/deploy", "apps/pay/deploy/nested"})
+            # nested folders collapse into their ancestor
+            self.assertEqual([d.as_posix() for d in k8s_project_map.collapse(dirs)], ["apps/pay/deploy"])
+
+    def test_writes_project_settings_merging_defaults(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.build_repo(root)
+            defaults = root / "user-settings.json"
+            defaults.write_text(json.dumps({"lsp": {"yaml-language-server": {"settings": {"yaml": {
+                "schemas": {"kubernetes": ["k8s/**/x.yaml"], "https://example/s.json": ["a.yaml"]}}}}}}))
+            argv = ["m.py", str(root), "--defaults-from", str(defaults)]
+            with mock.patch.object(sys, "argv", argv):
+                self.assertEqual(quiet(k8s_project_map.main), 0)
+            written = json.loads((root / ".zed/settings.json").read_text())
+            k8s = written["lsp"]["yaml-language-server"]["settings"]["yaml"]["schemas"]["kubernetes"]
+            self.assertIn("k8s/**/x.yaml", k8s)  # user default carried over (project settings replace)
+            self.assertIn(f"apps/pay/deploy/**/{k8s_project_map.DEFAULT_SKIP}.y?(a)ml", k8s)
+            with mock.patch.object(sys, "argv", argv):  # idempotent
+                quiet(k8s_project_map.main)
+            self.assertEqual(json.loads((root / ".zed/settings.json").read_text()), written)
+
+    def test_keeps_unrelated_project_settings(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.build_repo(root)
+            (root / ".zed").mkdir()
+            (root / ".zed/settings.json").write_text('{\n  // keep me\n  "tab_size": 4\n}\n')
+            with mock.patch.object(sys, "argv", ["m.py", str(root)]):
+                quiet(k8s_project_map.main)
+            written = json.loads((root / ".zed/settings.json").read_text())
+            self.assertEqual(written["tab_size"], 4)
+
+    def test_helm_templates_are_not_annotated(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            template = Path(tmp) / "templates"
+            template.mkdir()
+            f = template / "deployment.yaml"
+            f.write_text("apiVersion: apps/v1\nkind: Deployment\n")
+            with mock.patch.object(sys, "argv", ["a.py", str(f)]):
+                self.assertEqual(quiet(annotate_mod.main), 1)
+            self.assertNotIn("yaml-language-server", f.read_text())
+            with mock.patch.object(sys, "argv", ["a.py", str(f), "--force"]):
+                self.assertEqual(quiet(annotate_mod.main), 0)
+            self.assertIn("yaml-language-server", f.read_text())
 
 
 class CrdExtractTest(unittest.TestCase):

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: broken
 spec:
-  replicass: 2
+  replicas: 2
   selector:
     matchLabels:
       app: broken

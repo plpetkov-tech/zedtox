@@ -362,6 +362,9 @@ def builtin_vars() -> dict:
         "home": Path.home().as_posix(),
         "python": "python" if is_windows() else "python3",
         "data_dir": data_home().as_posix(),
+        # Where this config is installed on the machine that runs the tasks
+        # (under WSL that's the Linux side, which is where language servers run).
+        "zed_config_dir": default_targets(include_windows=False)[0].as_posix(),
     }
 
 

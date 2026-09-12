@@ -34,6 +34,7 @@
     {
       "context": "Editor && vim_mode == normal && !menu",
       "bindings": {
+        "space y m": ["task::Spawn", { "task_name": "k8s: map this repo's manifest folders (once per repo)" }],
         "space y a": ["task::Spawn", { "task_name": "k8s: add schema modeline to current file" }],
         "space y shift-a": ["task::Spawn", { "task_name": "k8s: add schema modelines to this folder" }],
         "space y c": ["task::Spawn", { "task_name": "k8s: extract CRD schemas from current kube context" }],
@@ -44,6 +45,21 @@
     }
   ],
   "tasks": [
+    {
+      // The seamless path for a repo whose layout isn't in k8s_globs: finds the manifests
+      // by content (apiVersion + kind) and writes their folders into the repo's own
+      // .zed/settings.json. Run once, commit it, and the whole team gets validation
+      // without modelines or per-machine settings.
+      "label": "k8s: map this repo's manifest folders (once per repo)",
+      "command": "${python}",
+      "args": [
+        "${repo}/scripts/k8s_project_map.py",
+        "$ZED_WORKTREE_ROOT",
+        "--skip", "${k8s_skip}",
+        "--defaults-from", "${zed_config_dir}/settings.json"
+      ],
+      "reveal": "always"
+    },
     {
       // Like yaml-companion's auto-annotate: reads apiVersion/kind of each document and
       // inserts `# yaml-language-server: $schema=...` (local extracted CRD > datree > yannh).
