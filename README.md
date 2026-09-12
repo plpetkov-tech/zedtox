@@ -60,7 +60,7 @@ You can also type these in the command palette (`ctrl-shift-p`): `copilot`, `van
 | `space g g` git panel | `space g b` blame | `space g l` inline blame | `space g d` diff hunk |
 | `space t i` inlay hints | `space t w` soft wrap | `space t d` inline diagnostics | `space t z` zen / `space t m` minimap |
 | `space w v` / `space w s` split | `space w z` zoom | `space b d` close buffer | `space o t` terminal |
-| `space y a` k8s schema modeline | `space y c` extract cluster CRDs | `space y r` restart yaml LSP | `space k d` / `space k v` kubectl diff / dry-run |
+| `space y a` / `space y A` schema modeline: file / folder | `space y c` extract cluster CRDs | `space y r` restart yaml LSP | `space k d` / `space k v` kubectl diff / dry-run |
 | `space h r` render template | `space h a` render chart | `space h l` helm lint | |
 
 Zed's built-in vim LSP keys still apply:
@@ -102,6 +102,13 @@ The completion menu shows the LSP's docs **next to** the list (Zed places it; th
 
 ## Kubernetes and Helm
 
+**What the folder list does and does not affect.** Language servers are never path-gated: yaml-ls
+attaches to every YAML file wherever it lives, so syntax errors, formatting and SchemaStore's
+name-based matches (workflows, compose, kustomization, GitLab CI...) work in any folder. The folder
+list only decides which files get the *Kubernetes* schema, because that's the one thing
+yaml-language-server can't work out on its own. A manifest in an unlisted folder isn't broken, it's
+just unvalidated — and `space y A` fixes a whole folder in one go.
+
 **Which YAML is Kubernetes?** yaml-language-server can't tell from content, so it goes by folder. `k8s/ kubernetes/ kube/ manifests/ deploy/ deployments/ kustomize/ overlays/ clusters/ gitops/ argocd/ flux/ flux-system/ crds/` and `*.k8s.yaml` are mapped (`k8s_globs` in `config.jsonc`). Inside those folders, `Chart.yaml`, `kustomization.yaml`, `values*.yaml`, compose, skaffold and helmfile files are skipped, because they have their own schemas.
 
 - **Your layout:** add folders in `local.jsonc` → `"vars": {"k8s_extra_globs": ["platform/**/${k8s_skip}.y?(a)ml"]}`.
@@ -111,6 +118,7 @@ The completion menu shows the LSP's docs **next to** the list (Zed places it; th
       "kubernetes": ["env/**/*.yaml"] } } } } } }
   ```
 - **One file:** `space y a` writes `# yaml-language-server: $schema=…` into each document, based on its `apiVersion`/`kind`. A modeline beats every other mapping and also helps teammates on VS Code.
+- **A whole repo, once:** `space y A` does the same for every manifest in the current file's folder (recursively; Helm templates and values files are skipped, and it's idempotent). After that the repo validates regardless of folder names, for everyone who opens it.
 
 **CRDs are automatic.** In mapped files, yaml-ls resolves `apiVersion`/`kind`: built-in kinds use the Kubernetes schema for `k8s_version`, and CRDs are fetched from the [datree CRDs-catalog](https://github.com/datreeio/CRDs-catalog) (Istio, Argo CD, Flux, cert-manager, External Secrets, prometheus-operator, Gateway API and many more). Hover shows each field's docs and the schema's source.
 

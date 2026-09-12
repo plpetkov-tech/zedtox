@@ -348,6 +348,27 @@ class AnnotateTest(unittest.TestCase):
         again, _ = annotate_mod.annotate(out, "1.33.2", self.STORE, None)
         self.assertEqual(again, out)
 
+    def test_directory_mode_skips_charts_and_non_manifests(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "env").mkdir()
+            (root / "chart" / "templates").mkdir(parents=True)
+            manifest = root / "env" / "deploy.yaml"
+            manifest.write_text("apiVersion: apps/v1\nkind: Deployment\n")
+            plain = root / "env" / "config.yaml"
+            plain.write_text("database:\n  host: localhost\n")
+            template = root / "chart" / "templates" / "deployment.yaml"
+            template.write_text("apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: {{ .Release.Name }}\n")
+            with mock.patch.object(sys, "argv", ["a.py", str(root), "--crd-store", self.STORE]):
+                self.assertEqual(quiet(annotate_mod.main), 0)
+            self.assertIn("deployment-apps-v1.json", manifest.read_text())
+            self.assertNotIn("yaml-language-server", plain.read_text())
+            self.assertNotIn("yaml-language-server", template.read_text())
+            before = manifest.read_text()
+            with mock.patch.object(sys, "argv", ["a.py", str(root), "--crd-store", self.STORE]):
+                quiet(annotate_mod.main)
+            self.assertEqual(manifest.read_text(), before)  # idempotent
+
     def test_templated_documents_skipped(self):
         out, report = annotate_mod.annotate("apiVersion: {{ .Values.api }}\nkind: Thing\n", "1.33.2", self.STORE, None)
         self.assertNotIn("yaml-language-server", out)

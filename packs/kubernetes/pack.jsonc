@@ -35,6 +35,7 @@
       "context": "Editor && vim_mode == normal && !menu",
       "bindings": {
         "space y a": ["task::Spawn", { "task_name": "k8s: add schema modeline to current file" }],
+        "space y shift-a": ["task::Spawn", { "task_name": "k8s: add schema modelines to this folder" }],
         "space y c": ["task::Spawn", { "task_name": "k8s: extract CRD schemas from current kube context" }],
         "space y r": "editor::RestartLanguageServer",
         "space k d": ["task::Spawn", { "task_name": "k8s: kubectl diff current file" }],
@@ -58,6 +59,22 @@
       "save": "current",
       "reveal": "no_focus",
       "hide": "on_success"
+    },
+    {
+      // One-time fix for a repo whose layout isn't in k8s_globs: pins every manifest
+      // to its schema, so validation no longer depends on folder names (and works for
+      // teammates on VS Code too). Skips Helm templates and values files.
+      "label": "k8s: add schema modelines to this folder",
+      "command": "${python}",
+      "args": [
+        "${repo}/scripts/k8s_schema_annotate.py",
+        "--k8s-version", "${k8s_version}",
+        "--crd-store", "${crd_store_url}",
+        "--local-crds", "${data_dir}/crds",
+        "$ZED_DIRNAME"
+      ],
+      "save": "all",
+      "reveal": "always"
     },
     {
       // Replaces `curl ... crd-extractor.sh | bash`: reads CRDs via kubectl, writes JSON

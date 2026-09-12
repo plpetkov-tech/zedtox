@@ -115,17 +115,46 @@ def annotate(text: str, k8s_version: str, crd_store: str, local_crds: Path | Non
     return "".join(lines), report
 
 
+def yaml_files(root: Path):
+    """Every YAML file under a directory worth annotating.
+
+    Skips VCS/vendor directories and Helm charts: templates are Go templates
+    (helm_ls handles them) and their values files aren't manifests.
+    """
+    skip_dirs = {".git", ".svn", "node_modules", ".venv", "venv", "__pycache__", "templates", "charts"}
+    for path in sorted(root.rglob("*")):
+        if path.suffix in (".yaml", ".yml") and not any(part in skip_dirs for part in path.relative_to(root).parts):
+            yield path
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("file", type=Path)
+    p.add_argument("file", type=Path, help="a .yaml/.yml file, or a directory to walk")
     p.add_argument("--k8s-version", default="1.33.2")
     p.add_argument("--crd-store", default=DATREE)
     p.add_argument("--local-crds", type=Path, default=None, help="directory written by crd_extract.py")
     p.add_argument("--dry-run", action="store_true", help="print the result instead of writing the file")
     args = p.parse_args()
 
+    if args.file.is_dir():
+        changed = 0
+        for path in yaml_files(args.file):
+            text = path.read_text(encoding="utf-8")
+            new_text, report = annotate(text, args.k8s_version, args.crd_store, args.local_crds)
+            if new_text == text:
+                continue
+            rel = path.relative_to(args.file)
+            print(f"{rel}: " + "; ".join(r for r in report if "skipped" not in r and "already" not in r))
+            if not args.dry_run:
+                path.write_text(new_text, encoding="utf-8")
+            changed += 1
+        verb = "would annotate" if args.dry_run else "annotated"
+        print(f"{verb} {changed} file(s) under {args.file}"
+              + ("" if changed else " (nothing to do: already annotated, or no Kubernetes manifests)"))
+        return 0
+
     if args.file.suffix not in (".yaml", ".yml"):
-        print(f"{args.file}: not a .yaml/.yml file", file=sys.stderr)
+        print(f"{args.file}: not a .yaml/.yml file or a directory", file=sys.stderr)
         return 1
     text = args.file.read_text(encoding="utf-8")
     new_text, report = annotate(text, args.k8s_version, args.crd_store, args.local_crds)
