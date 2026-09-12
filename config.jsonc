@@ -13,7 +13,8 @@
     "bash",
     "github-actions",
     "jenkins",
-    "docker"
+    "docker",
+    "look"
   ],
 
   "vars": {
@@ -22,6 +23,23 @@
     // the profile can't bring Copilot back at runtime; the agent, MCP servers,
     // external agents and the AI keybindings stay disabled either way.
     "ai_kill_switch": true,
+
+    // Theme, from the "look" pack. Other variants of the same extension:
+    // "Tokyo Night Storm" (lighter navy), "Tokyo Night Moon" (softer contrast).
+    // Changing these needs one `install --reset-ui`, since Zed owns the theme key.
+    "theme_dark": "Tokyo Night",
+    "theme_light": "Tokyo Night Light",
+
+    // Window translucency. Alpha is the last hex pair:
+    // "ff" solid, "e6" 90%, "d9" 85%, "cc" 80%, "bf" 75%. Lower = more see-through.
+    "glass_alpha": "d9",
+    // blurred (compositor blurs what's behind) | transparent (no blur) | opaque (off)
+    "glass_appearance": "blurred",
+    // Base colours of the theme above: editor surface and the chrome around it.
+    "glass_bg_dark": "#1a1b26",
+    "glass_panel_dark": "#16161e",
+    "glass_bg_light": "#d5d6db",
+    "glass_panel_light": "#cbccd1",
 
     // Kubernetes schema version for manifests and Helm templates (match your clusters).
     "k8s_version": "1.33.2",

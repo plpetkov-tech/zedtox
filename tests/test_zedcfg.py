@@ -178,6 +178,20 @@ class RepoBuildTest(unittest.TestCase):
         self.assertEqual(helm["yamlls"]["config"]["kubernetesVersion"], self.b.variables["k8s_version"])
         self.assertNotIn("helm_ls", self.s["lsp"])
 
+    def test_theme_overrides_match_the_configured_themes(self):
+        # theme_overrides is keyed by theme name; a renamed theme would silently
+        # orphan its translucency settings.
+        theme = self.s["theme"]
+        for name in self.s.get("theme_overrides", {}):
+            self.assertIn(name, (theme["dark"], theme["light"]), name)
+        for name in (theme["dark"], theme["light"]):
+            overrides = self.s.get("theme_overrides", {}).get(name, {})
+            if overrides:
+                self.assertIn(overrides["background.appearance"], ("opaque", "transparent", "blurred"))
+                for key, value in overrides.items():
+                    if key.endswith("background"):
+                        self.assertRegex(value, r"^#[0-9a-f]{8}$", key)  # colour + alpha
+
     def test_every_pack_is_well_formed(self):
         for name in zedcfg.available_packs():
             pack = zedcfg.load_pack(name)

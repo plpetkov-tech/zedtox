@@ -1,0 +1,56 @@
+{
+  "description": "Look: Tokyo Night theme + a translucent window so the compositor's blur shows through (SwayFX/KWin/macOS/Windows). Pure settings - Zed has no CSS",
+
+  "requires": [],
+
+  "settings": {
+    // Theme extensions are plain JSON colour files: no executable code, so they
+    // need no capability grants. Variants: Tokyo Night, Tokyo Night Storm,
+    // Tokyo Night Moon, Tokyo Night Light (set ${theme_dark} / ${theme_light}).
+    "auto_install_extensions": { "tokyo-night": true },
+
+    "theme": {
+      "mode": "dark",
+      "dark": "${theme_dark}",
+      "light": "${theme_light}"
+    },
+
+    // theme_overrides is keyed by theme name, hence the variables.
+    //
+    // "background.appearance": opaque | transparent | blurred
+    //   blurred     - ask the compositor to blur what's behind (SwayFX, KWin,
+    //                 macOS, Windows 11 acrylic); plain transparency elsewhere.
+    //   transparent - see-through, no blur. Use if blur looks muddy.
+    //
+    // Alpha is the last hex pair of each colour, from ${glass_alpha} ("ff" = solid).
+    // Popups, menus and dropdowns stay opaque: translucent ones are unreadable.
+    "theme_overrides": {
+      "${theme_dark}": {
+        "background.appearance": "${glass_appearance}",
+        "background": "${glass_panel_dark}${glass_alpha}",
+        "editor.background": "${glass_bg_dark}${glass_alpha}",
+        "editor.gutter.background": "${glass_bg_dark}${glass_alpha}",
+        "panel.background": "${glass_panel_dark}${glass_alpha}",
+        "tab_bar.background": "${glass_panel_dark}${glass_alpha}",
+        "tab.inactive_background": "${glass_panel_dark}${glass_alpha}",
+        "title_bar.background": "${glass_panel_dark}${glass_alpha}",
+        "status_bar.background": "${glass_panel_dark}${glass_alpha}",
+        "toolbar.background": "${glass_bg_dark}${glass_alpha}",
+        "terminal.background": "${glass_bg_dark}${glass_alpha}"
+      },
+      "${theme_light}": {
+        "background.appearance": "${glass_appearance}",
+        "background": "${glass_panel_light}${glass_alpha}",
+        "editor.background": "${glass_bg_light}${glass_alpha}",
+        "editor.gutter.background": "${glass_bg_light}${glass_alpha}",
+        "panel.background": "${glass_panel_light}${glass_alpha}",
+        "tab_bar.background": "${glass_panel_light}${glass_alpha}",
+        "tab.inactive_background": "${glass_panel_light}${glass_alpha}",
+        "title_bar.background": "${glass_panel_light}${glass_alpha}",
+        "status_bar.background": "${glass_panel_light}${glass_alpha}",
+        "toolbar.background": "${glass_bg_light}${glass_alpha}",
+        "terminal.background": "${glass_bg_light}${glass_alpha}"
+      }
+    }
+  }
+}
