@@ -5,7 +5,10 @@
       "bin": "actionlint",
       "why": "space r r -> 'gha: actionlint': checks expressions, shell (via shellcheck) and runner labels beyond the schema",
       "optional": true,
-      "install": { "pacman": "actionlint", "brew": "actionlint", "winget": "rhysd.actionlint", "scoop": "actionlint" }
+      "install": {
+        "pacman": "actionlint", "brew": "actionlint", "winget": "rhysd.actionlint", "scoop": "actionlint",
+        "manual": "optional: actionlint from https://github.com/rhysd/actionlint/releases (check against actionlint_<version>_checksums.txt) on PATH, e.g. ~/.local/bin"
+      }
     }
   ],
   "settings": {

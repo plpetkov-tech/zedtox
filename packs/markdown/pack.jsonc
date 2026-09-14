@@ -5,7 +5,10 @@
       "bin": "marksman",
       "why": "go-to-definition for links, completion of headings/files, broken-link diagnostics",
       "optional": true,
-      "install": { "pacman": "marksman", "brew": "marksman", "scoop": "marksman" }
+      "install": {
+        "pacman": "marksman", "brew": "marksman", "scoop": "marksman",
+        "manual": "optional: marksman-linux-x64 (or -arm64) from https://github.com/artempyanykh/marksman/releases (no checksum file: compare with the sha256 GitHub lists for the asset), saved as ~/.local/bin/marksman and chmod +x"
+      }
     }
   ],
   "settings": {

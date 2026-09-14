@@ -14,7 +14,10 @@
     {
       "bin": "ruff",
       "why": "lint diagnostics, formatting, organize imports",
-      "install": { "pacman": "ruff", "brew": "ruff", "pipx": "ruff", "winget": "astral-sh.ruff", "scoop": "ruff" }
+      "install": {
+        "pacman": "ruff", "brew": "ruff", "winget": "astral-sh.ruff", "scoop": "ruff",
+        "manual": "ruff from https://github.com/astral-sh/ruff/releases (check the matching .sha256) on PATH, e.g. ~/.local/bin"
+      }
     }
   ],
   "settings": {

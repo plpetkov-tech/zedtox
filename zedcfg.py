@@ -708,6 +708,11 @@ def detect_pkg_manager() -> str | None:
     return None
 
 
+def install_hint(install: dict, pm: str | None) -> tuple[str, str] | None:
+    """(manager, package or instructions) that doctor suggests: the system package first, then npm, pipx, manual."""
+    return next(((k, install[k]) for k in (pm, "npm", "pipx", "manual") if k and install.get(k)), None)
+
+
 def zed_log_servers(log: Path) -> tuple[dict[str, str], str]:
     """Map language server -> binary, for Zed's most recent run only.
 
@@ -758,8 +763,7 @@ def cmd_doctor(args) -> int:
         if path:
             ok(f"{label} -> {path}")
             continue
-        install = t["install"]
-        how = next(((k, install[k]) for k in (pm, "npm", "pipx", "manual") if k and install.get(k)), None)
+        how = install_hint(t["install"], pm)
         if t["optional"]:
             warn(f"{label} optional, missing: {t['why']}")
         else:

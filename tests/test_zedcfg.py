@@ -221,6 +221,17 @@ class RepoBuildTest(unittest.TestCase):
             for req in pack.get("requires", []):
                 self.assertTrue(req.get("bin") and req.get("install"), (name, req))
 
+    def test_doctor_has_an_install_route_on_arch_and_debian(self):
+        # Checked against Debian 12 and 13: every other tool is unpackaged or too old there,
+        # so an "apt" entry for it would print an install command that fails.
+        debian_packages = {"shellcheck", "shfmt"}
+        for name in zedcfg.available_packs():
+            for req in zedcfg.load_pack(name).get("requires", []):
+                for pm in ("pacman", "apt"):
+                    self.assertIsNotNone(zedcfg.install_hint(req["install"], pm), (pm, name, req["bin"]))
+                if "apt" in req["install"]:
+                    self.assertIn(req["install"]["apt"], debian_packages, (name, req["bin"]))
+
     def test_snippets_escape_literal_dollars(self):
         for name, snippets in self.b.snippets.items():
             for key, snip in snippets.items():

@@ -10,7 +10,11 @@
       "bin": "kubectl",
       "why": "space y c (extract CRD schemas from your cluster), space k d / k v (diff / server dry-run)",
       "optional": true,
-      "install": { "pacman": "kubectl", "brew": "kubectl", "apt": "kubectl", "winget": "Kubernetes.kubectl", "scoop": "kubectl" }
+      "install": {
+        "pacman": "kubectl", "brew": "kubectl", "winget": "Kubernetes.kubectl", "scoop": "kubectl",
+        // No apt: Debian's kubectl is 1.20 on 12 and frozen at 1.32 on 13.
+        "manual": "optional: kubectl from Kubernetes' signed apt/rpm repo at pkgs.k8s.io, pinned to your cluster's minor version: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/"
+      }
     }
   ],
   "settings": {

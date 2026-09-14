@@ -4,7 +4,7 @@ A portable [Zed](https://zed.dev) setup for DevSecOps work: no AI unless you ask
 
 ## Start here
 
-**~10 minutes, most of it pacman.**
+**~10 minutes, most of it package installs.**
 
 ```sh
 git clone <this repo> ~/zedtox && cd ~/zedtox
@@ -12,12 +12,19 @@ python3 zedcfg.py doctor
 ```
 
 1. Run the two commands above. `doctor` lists what's missing and prints the exact install command; it installs nothing itself.
-2. Install the tools it names:
+2. Install the tools it names. On Arch:
    ```sh
    sudo pacman -S --needed yaml-language-server bash-language-server shellcheck shfmt \
                            vscode-json-languageserver dockerfile-language-server ruff actionlint helm kubectl
    npm install --global --prefix ~/.local --ignore-scripts basedpyright   # not in Arch's repos
    ```
+   On Debian 12 or 13 (WSL included), the language servers aren't packaged, so they come from npm:
+   ```sh
+   sudo apt install git python3 nodejs npm shellcheck shfmt
+   npm install --global --prefix ~/.local --ignore-scripts yaml-language-server bash-language-server \
+       vscode-langservers-extracted dockerfile-language-server-nodejs basedpyright
+   ```
+   Then ruff, and optionally actionlint, helm and kubectl, from their upstream releases: `doctor` prints where each comes from and what to verify it against. Open a new shell afterwards so `~/.local/bin` is on `PATH`.
 3. Read what you're about to allow: `python3 zedcfg.py audit`
 4. Install it: `python3 zedcfg.py install` (your current Zed config is backed up first; add `--dry-run` to see the diff)
 5. Open your code folder in Zed, click **Restricted Mode** in the title bar, trust the folder and tick *"trust all subdirectories"*. Once, per machine.
@@ -30,7 +37,7 @@ After any change in this repo: `python3 zedcfg.py install`, or `space r r` → *
 - **Vim with a Space leader** and a which-key popup, plus one key to flip to plain VSCode-style editing with the mouse.
 - **Kubernetes validation that follows the repo,** including CRDs (Istio, Argo, Flux, cert-manager, ESO, prometheus-operator, Gateway API), resolved from `apiVersion`/`kind`.
 - **Helm that understands your chart:** `.Values.` completion, hover showing the real value, go-to-definition into `values.yaml`, lint, and render-this-template.
-- **Language servers from signed distro packages,** extensions restricted to an exact allowlist, and untrusted repos that can't start anything.
+- **Language servers from signed distro packages** on Arch (npm with install scripts blocked on Debian), extensions restricted to an exact allowlist, and untrusted repos that can't start anything.
 
 ## Keys
 
@@ -180,6 +187,7 @@ Two smaller levers:
 
 - **Untrusted repos can't run anything.** `trust_all_worktrees` is off, so an untrusted folder's `.zed/settings.json` is ignored and no language servers start. Self-test: create a folder with `.zed/settings.json` containing `{"lsp":{"yaml-language-server":{"binary":{"path":"/usr/bin/touch","arguments":["/tmp/zed-trust-FAILED"]}}}}` plus any `.yaml`, open it, and confirm Restricted Mode appears and `/tmp/zed-trust-FAILED` does not.
 - **Language servers resolve by name from `$PATH`,** never hardcoded paths, so distro packages win and the config stays portable. `doctor` reports which binary each server actually used and flags anything Zed downloaded itself.
+- **On Debian, less of it is signed.** Debian packages none of these language servers, so they come from npm (no root, install scripts blocked, dependencies unreviewed). ruff, actionlint, marksman and helm come from upstream releases you check against their published sha256, and kubectl from Kubernetes' signed apt repo, because Debian's copies are too old or frozen.
 - **Extensions start with zero capabilities** (Zed's default is exec/download/npm-install anything) and get exactly one grant each:
 
   | Pack | Extension | Allowed |
@@ -227,7 +235,7 @@ Switching Python to pacman's `pyright` (no inlay hints), in `local.jsonc`:
 
 **30–45 minutes, mostly the WSL install.** Zed runs natively on Windows and opens repos inside WSL; language servers, helm, kubectl, tasks and the terminal run in Linux. The Windows side needs only Zed.
 
-1. Windows: `winget install -e --id ZedIndustries.Zed`, then `wsl --install archlinux` (official Arch image, so everything above applies unchanged).
+1. Windows: `winget install -e --id ZedIndustries.Zed`, then `wsl --install archlinux` (official Arch image) or `wsl --install Debian`. *Start here* covers both.
 2. In WSL: clone this repo, `python3 zedcfg.py doctor`, install what it lists, then `python3 zedcfg.py install`. It writes both `~/.config/zed` (WSL, where language servers read their settings) and `%APPDATA%\Zed` (Windows, UI and keymap). Add `--target-dir` if `%APPDATA%` isn't detected.
 3. In Zed: command palette → `projects: open wsl` → your distro → a folder on the Linux filesystem (not `/mnt/c`: slow, plus CRLF surprises).
 4. Sign in to Copilot on the Windows side, if you use it.

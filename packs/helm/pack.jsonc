@@ -20,7 +20,11 @@
       "bin": "helm",
       "why": "space h r (render current template) / space h l (lint chart)",
       "optional": true,
-      "install": { "pacman": "helm", "brew": "helm", "apt": "helm", "winget": "Helm.Helm", "scoop": "helm" }
+      "install": {
+        "pacman": "helm", "brew": "helm", "winget": "Helm.Helm", "scoop": "helm",
+        // No apt: Debian's helm is 3.8 (2022) on 12 and frozen at 4.0 on 13.
+        "manual": "optional: helm from https://github.com/helm/helm/releases (the get.helm.sh tarball; check its .sha256sum and the .asc signature against helm's KEYS file) on PATH, e.g. ~/.local/bin"
+      }
     }
   ],
   "settings": {
