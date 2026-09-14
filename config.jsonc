@@ -1,6 +1,6 @@
 // config.jsonc - which packs are on, plus variables the packs use.
 // Per-machine changes go in local.jsonc (see local.jsonc.example), not here.
-// After editing: python3 zedcfg.py install   (or run the "zed-initiative: reinstall config" task)
+// After editing: python3 zedcfg.py install   (or run the "zedtox: reinstall config" task)
 {
   // Order matters only when two packs set the same scalar (the later one wins, with a warning).
   // Also available, off by default: terraform, markdown.   `python3 zedcfg.py list` shows all.

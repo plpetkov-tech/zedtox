@@ -2,7 +2,7 @@
 // Packs add their own. Zed variables: $ZED_FILE, $ZED_DIRNAME, $ZED_WORKTREE_ROOT, ...
 [
   {
-    "label": "zed-initiative: reinstall config",
+    "label": "zedtox: reinstall config",
     "command": "${python}",
     "args": ["${repo}/zedcfg.py", "install"],
     "cwd": "${repo}",
@@ -10,7 +10,7 @@
     "hide": "on_success"
   },
   {
-    "label": "zed-initiative: doctor",
+    "label": "zedtox: doctor",
     "command": "${python}",
     "args": ["${repo}/zedcfg.py", "doctor"],
     "cwd": "${repo}",

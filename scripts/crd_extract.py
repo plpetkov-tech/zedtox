@@ -70,7 +70,7 @@ def crd_versions(crd: dict):
 
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--out", type=Path, required=True, help="output directory, e.g. ~/.local/share/zed-initiative/crds")
+    p.add_argument("--out", type=Path, required=True, help="output directory, e.g. ~/.local/share/zedtox/crds")
     p.add_argument("--context", help="kube context (default: current)")
     p.add_argument("--kubectl", default="kubectl")
     p.add_argument("--no-strict", action="store_true", help="don't reject unknown keys in objects")

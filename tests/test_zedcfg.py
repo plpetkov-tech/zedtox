@@ -328,6 +328,21 @@ class InstallTest(unittest.TestCase):
         self.assertEqual(self.install(), 0)
         self.assertFalse(stale.exists())
 
+    def test_legacy_names_are_migrated(self):
+        (self.target / "settings.json").write_text('{"theme": "One Dark"}')
+        self.install()
+        (self.target / zedcfg.STATE_FILE).rename(self.target / zedcfg.LEGACY_STATE_FILE)
+        (self.target / zedcfg.BACKUP_DIR).rename(self.target / zedcfg.LEGACY_BACKUP_DIR)
+        (self.target / "keymap.json").write_text("[]")
+        self.assertEqual(self.install(), 1)  # drift still detected through the legacy state file
+        self.assertTrue((self.target / zedcfg.LEGACY_STATE_FILE).is_file())
+        self.assertEqual(self.install(force=True), 0)
+        self.assertFalse((self.target / zedcfg.LEGACY_STATE_FILE).exists())
+        self.assertFalse((self.target / zedcfg.LEGACY_BACKUP_DIR).exists())
+        self.assertTrue((self.target / zedcfg.STATE_FILE).is_file())
+        self.assertIn("One Dark", next((self.target / zedcfg.BACKUP_DIR).glob("*/settings.json")).read_text())
+        self.assertEqual(next((self.target / zedcfg.BACKUP_DIR).glob("*/keymap.json")).read_text(), "[]")
+
 
 class TargetsTest(unittest.TestCase):
     def test_wsl_writes_both_sides(self):

@@ -1,4 +1,4 @@
-# zed-initiative
+# zedtox
 
 A portable [Zed](https://zed.dev) setup for DevSecOps work: no AI unless you ask for it, vim-grade editing, Kubernetes/Helm/Python/Bash tooling, and a small attack surface. Needs only Python 3 (standard library) and Zed.
 
@@ -7,7 +7,7 @@ A portable [Zed](https://zed.dev) setup for DevSecOps work: no AI unless you ask
 **~10 minutes, most of it pacman.**
 
 ```sh
-git clone <this repo> ~/zed-initiative && cd ~/zed-initiative
+git clone <this repo> ~/zedtox && cd ~/zedtox
 python3 zedcfg.py doctor
 ```
 
@@ -22,7 +22,7 @@ python3 zedcfg.py doctor
 4. Install it: `python3 zedcfg.py install` (your current Zed config is backed up first; add `--dry-run` to see the diff)
 5. Open your code folder in Zed, click **Restricted Mode** in the title bar, trust the folder and tick *"trust all subdirectories"*. Once, per machine.
 
-After any change in this repo: `python3 zedcfg.py install`, or `space r r` → *zed-initiative: reinstall config*.
+After any change in this repo: `python3 zedcfg.py install`, or `space r r` → *zedtox: reinstall config*.
 
 ## What you get
 
@@ -163,7 +163,7 @@ Two smaller levers:
 
 **CRDs resolve themselves.** In mapped files, built-in kinds use the Kubernetes schema for `k8s_version`; CRDs come from the [datree CRDs-catalog](https://github.com/datreeio/CRDs-catalog). Hover shows each field's docs and the schema source.
 
-**Your own CRDs:** `space y c` reads the CRDs of your current kube context (`kubectl get crd -o json`, read-only) into `~/.local/share/zed-initiative/crds/`, which `space y a` then prefers over the public catalog. Replaces piping `crd-extractor.sh` from curl into bash; output stays out of git.
+**Your own CRDs:** `space y c` reads the CRDs of your current kube context (`kubectl get crd -o json`, read-only) into `~/.local/share/zedtox/crds/`, which `space y a` then prefers over the public catalog. Replaces piping `crd-extractor.sh` from curl into bash; output stays out of git.
 
 **Helm** (`packs/helm`): templates, `values*.yaml` and helmfile.d are the *Helm* language, served by helm_ls.
 
@@ -236,9 +236,9 @@ Switching Python to pacman's `pyright` (no inlay hints), in `local.jsonc`:
 
 - **Update:** `git pull && python3 zedcfg.py install`
 - **Edits made inside Zed:** theme, font size, vim toggle and panel docks are kept on reinstall. Any other edit is reported with a diff and install stops until you move it into `local.jsonc` or pass `--force`; `--reset-ui` resets the kept keys.
-- **Backups:** every overwritten file lands in `<zed config>/zed-initiative-backups/<timestamp>/`. The first one is your pre-zed-initiative config.
+- **Backups:** every overwritten file lands in `<zed config>/zedtox-backups/<timestamp>/`. The first one is your pre-zedtox config.
 - **Old Zed downloads:** `doctor --clean-downloads` removes language servers Zed fetched itself that a PATH install now supersedes.
-- **Uninstall:** restore that first backup, delete `zed-initiative.state.json`.
+- **Uninstall:** restore that first backup, delete `zedtox.state.json`.
 
 ## Publishing this repo
 
